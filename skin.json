@@ -1,0 +1,74 @@
+{
+    "name": "Meridian",
+    "description": "Calm, modern dark theme: flat surfaces, one accent color, clearer hierarchy.",
+    "version": "1.0.0",
+    "author": "Starluck",
+    "tags": [
+        "Dark",
+        "Minimal",
+        "Modern"
+    ],
+    "github": {
+        "owner": "Sampong-Starluck",
+        "repo_name": "Meridian"
+    },
+    "Steam-WebKit": "webkit.css",
+    "UseDefaultPatches": true,
+    "Conditions": {
+        "Navigation": {
+            "description": "Left rail puts Store, Library, Community and your profile in a sidebar, like the Meridian mockup. Top tabs keeps Steam's layout and its hover menus.",
+            "tab": "Layout",
+            "default": "Left rail",
+            "values": {
+                "Left rail": {
+                    "TargetCss": {
+                        "affects": [
+                            "^Steam$"
+                        ],
+                        "src": "layouts/rail.css"
+                    }
+                },
+                "Top tabs": {}
+            }
+        },
+        "Accent color": {
+            "description": "Used for Play buttons, progress bars, focus rings and highlights.",
+            "tab": "Theme",
+            "default": "Blue",
+            "values": {
+                "Blue": {
+                    "TargetCss": {
+                        "affects": [
+                            ".*"
+                        ],
+                        "src": "accents/blue.css"
+                    }
+                },
+                "Mint": {
+                    "TargetCss": {
+                        "affects": [
+                            ".*"
+                        ],
+                        "src": "accents/mint.css"
+                    }
+                },
+                "Amber": {
+                    "TargetCss": {
+                        "affects": [
+                            ".*"
+                        ],
+                        "src": "accents/amber.css"
+                    }
+                },
+                "Violet": {
+                    "TargetCss": {
+                        "affects": [
+                            ".*"
+                        ],
+                        "src": "accents/violet.css"
+                    }
+                }
+            }
+        }
+    }
+}

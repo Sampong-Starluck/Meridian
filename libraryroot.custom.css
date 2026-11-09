@@ -1,0 +1,1415 @@
+/* Meridian · Steam client (library, menus, dialogs)
+   Every color, radius and font lives in :root. Change it once, it changes everywhere.
+   Class names here are the readable ones from Steam (e.g. TopBar), not the
+   scrambled _3Z7VQ... ones, so they survive most Steam updates. */
+
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap");
+
+:root {
+    /* Surfaces, darkest to lightest */
+    --mr-rail: #0A0D12;
+    --mr-bg: #0E1116;
+    --mr-surface: #161B22;
+    --mr-raised: #1A212C;
+    --mr-line: #1F2732;
+    --mr-line-strong: #2A3340;
+
+    /* Text and status */
+    --mr-text: #E8ECF1;
+    --mr-muted: #9AA4B2;
+    --mr-ok: #7DD3A7;
+    --mr-danger: #C93C3C;
+
+    /* Accent: set by accents/*.css, falls back to blue */
+    --mr-a: var(--mr-accent, #6EA8FE);
+    --mr-on-a: #0A0D12;
+
+    --mr-r-xs: 8px;
+    --mr-r-sm: 10px;
+    --mr-r-md: 12px;
+    --mr-r-lg: 16px;
+    --mr-font: "Geist", system-ui, "Segoe UI", sans-serif;
+    --mr-ease: 150ms ease;
+}
+
+/* ========== 1. Global ========== */
+
+/* No background on body: menu windows are transparent, and a body color
+   would show square corners behind the rounded menus. */
+body {
+    font-family: var(--mr-font) !important;
+    color: var(--mr-text);
+    -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+    background: var(--mr-a);
+    color: var(--mr-on-a);
+}
+
+:focus-visible {
+    outline: 2px solid var(--mr-a) !important;
+    outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--mr-line-strong) padding-box;
+    border: 3px solid transparent;
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--mr-muted);
+}
+
+.DialogButton {
+    border-radius: var(--mr-r-sm) !important;
+    background: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+    box-shadow: none !important;
+    transition: background-color var(--mr-ease);
+}
+
+.DialogButton:hover {
+    background: var(--mr-line-strong) !important;
+}
+
+.DialogInput,
+textarea,
+input[type="text"],
+input[type="search"] {
+    border: 1px solid var(--mr-line-strong) !important;
+    border-radius: var(--mr-r-md) !important;
+    background: var(--mr-surface) !important;
+    color: var(--mr-text) !important;
+}
+
+.DialogInput:focus,
+textarea:focus,
+input[type="text"]:focus,
+input[type="search"]:focus {
+    border-color: var(--mr-a) !important;
+}
+
+/* Sentence case instead of Steam's ALL CAPS, in one place */
+.RootMenuButton,
+.SuperNavMenu .MenuButton,
+.BottomBar .Text,
+.DownloadStatus .Queue,
+.contextMenu .contextMenuItem {
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* ========== 2. Window chrome ========== */
+
+.TopBar,
+.SuperNavBar {
+    background: var(--mr-bg) !important;
+    box-shadow: none !important;
+}
+
+/* Steam / View / Friends / Games / Help */
+.RootMenuButton {
+    border-radius: var(--mr-r-xs);
+    color: var(--mr-muted) !important;
+}
+
+.RootMenuButton:hover {
+    background: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+}
+
+/* Store / Library / Community / profile tabs.
+   Generic names (MenuButton, Selected) stay scoped under their parent. */
+.SuperNavMenu .MenuButton {
+    color: var(--mr-muted) !important;
+    font-weight: 600;
+    transition: color var(--mr-ease);
+}
+
+.SuperNavMenu .MenuButton:hover,
+.SuperNavMenu.Selected .MenuButton {
+    color: var(--mr-text) !important;
+}
+
+/* Steam draws the selected underline with ::after; recolor it instead of adding a second one */
+.SuperNavMenu.Selected .MenuButton::after {
+    background: var(--mr-a) !important;
+}
+
+/* Back / forward arrows */
+.SuperNav .Arrow {
+    color: var(--mr-muted) !important;
+}
+
+.SuperNav .Arrow:hover {
+    color: var(--mr-text) !important;
+}
+
+/* Taller title bar so the outlined buttons sit inside it with room above and below,
+   instead of touching the bottom border. Direct-child selector: the window buttons
+   hold another element called TitleBar. */
+.OuterFrame > .TopBar > .TitleBar {
+    height: 44px !important;
+    align-items: center !important;
+}
+
+.OuterFrame > .TopBar > .TitleBar > .RootMenuBar,
+.OuterFrame > .TopBar > .TitleBar > .DragArea,
+.OuterFrame > .TopBar > .TitleBar > .WindowControls {
+    height: 100% !important;
+    margin-top: 0 !important;
+}
+
+.OuterFrame > .TopBar > .TitleBar > .WindowControls > .title-area,
+.OuterFrame > .TopBar > .TitleBar > .WindowControls > .title-area > *,
+.OuterFrame > .TopBar > .TitleBar > .WindowControls .windowControlButton {
+    height: 100% !important;
+    max-height: none !important;
+}
+
+.OuterFrame > .TopBar > .TitleBar > .TitleBarControls {
+    height: auto !important;
+    margin: 0 8px 0 0 !important;
+}
+
+/* One height for every control: the bell was 2px taller than its neighbours */
+.TitleBarControls .Button,
+.TitleBarControls .AccountMenu {
+    box-sizing: border-box;
+    height: 28px !important;
+    min-height: 0 !important;
+    max-height: none !important;
+}
+
+/* Announcements, notifications, Big Picture: outlined square buttons (mockup: bell, gear) */
+.TitleBarControls .Button {
+    border: 1px solid var(--mr-line-strong);
+    border-radius: var(--mr-r-xs) !important;
+    background: transparent !important;
+    color: var(--mr-muted);
+    transition: background-color var(--mr-ease), color var(--mr-ease);
+}
+
+.TitleBarControls .Button:hover {
+    background: var(--mr-raised) !important;
+    color: var(--mr-text);
+}
+
+/* Unread notifications keep Steam's green, in the theme's accent */
+.TitleBarControls .NotificationsButton:not(.NoNew) {
+    border-color: var(--mr-a);
+    background: var(--mr-a) !important;
+    color: var(--mr-on-a);
+}
+
+/* Avatar, name and wallet as one pill */
+.TitleBarControls .AccountMenu {
+    border: 1px solid var(--mr-line-strong);
+    border-radius: 999px !important;
+    background: transparent !important;
+    color: var(--mr-text);
+    overflow: hidden;
+}
+
+.TitleBarControls .AccountMenu:hover {
+    background: var(--mr-raised) !important;
+}
+
+.TitleBarControls .AccountMenu .avatarHolder,
+.TitleBarControls .AccountMenu img.avatar {
+    border-radius: 999px !important;
+}
+
+/* Steam's blue-to-teal glow behind the window buttons (top-right corner) */
+.title-area-highlight {
+    display: none !important;
+}
+
+/* Minimize, maximize, close */
+.windowControlButton {
+    border-radius: var(--mr-r-xs);
+    color: var(--mr-muted);
+    transition: background-color var(--mr-ease);
+}
+
+.windowControlButton:hover {
+    background: var(--mr-raised) !important;
+    color: var(--mr-text);
+}
+
+.windowControlButton.closeButton:hover {
+    background: var(--mr-danger) !important;
+    color: #FFFFFF;
+}
+
+/* ========== 3. Content ========== */
+
+.ContentFrame,
+.LocalContentContainer {
+    background: var(--mr-bg) !important;
+}
+
+/* "Scroll To Top" pill at the bottom of long pages (Steam: blue gradient) */
+.ScrollToTopButton > div {
+    border: 1px solid var(--mr-line-strong);
+    border-radius: 999px;
+    background: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+    box-shadow: 0 6px 16px rgb(0 0 0 / 0.4);
+}
+
+/* Address bar on Store and Community pages */
+.URLBar {
+    background: var(--mr-rail) !important;
+    border-bottom: 1px solid var(--mr-line);
+}
+
+.URLBarText {
+    border-radius: var(--mr-r-sm) !important;
+    background: var(--mr-surface) !important;
+}
+
+.URLBarText .URL {
+    color: var(--mr-muted) !important;
+}
+
+.URLBar .ReloadButton {
+    border-radius: var(--mr-r-xs);
+}
+
+.URLBar .ReloadButton:hover {
+    background: var(--mr-raised) !important;
+}
+
+/* ========== 4. Bottom bar and alerts ========== */
+
+.BottomBar {
+    background: var(--mr-rail) !important;
+    border-top: 1px solid var(--mr-line);
+}
+
+.BottomBar .Text,
+.DownloadStatus .Queue {
+    color: var(--mr-muted) !important;
+}
+
+.AddGameButton:hover .Text,
+.FriendsButton:hover .Text,
+.DownloadStatus:hover .Queue {
+    color: var(--mr-text) !important;
+}
+
+/* The strip behind each alert is Steam blue; it shows around the rounded card's corners */
+.Alert {
+    background: var(--mr-bg) !important;
+}
+
+/* "Your Steam Client has been updated" */
+.ActionAlert {
+    margin: 8px;
+    border: 1px solid var(--mr-line-strong) !important;
+    border-radius: var(--mr-r-md) !important;
+    background: var(--mr-surface) !important;
+}
+
+.ActionAlert .PrimaryMessage {
+    color: var(--mr-text) !important;
+    font-weight: 600;
+}
+
+.ActionAlert .SecondaryMessage {
+    color: var(--mr-muted) !important;
+}
+
+.ActionAlert .PatchNotesLink {
+    color: var(--mr-a) !important;
+}
+
+.ActionAlert .AlertButton {
+    border-radius: var(--mr-r-sm) !important;
+    background: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+}
+
+/* With two or more buttons, the first is the main action ("Restart Steam").
+   A lone "Close" stays neutral. */
+.ActionAlert .AlertButton:first-child:not(:last-child) {
+    background: var(--mr-a) !important;
+    color: var(--mr-on-a) !important;
+}
+
+/* ========== 5. Menus ==========
+   Right-click menus, root menus (Steam/View/...), Account, Notifications
+   and Supernav windows all load this file. */
+
+/* Menu windows are transparent; keep them that way so rounded corners stay clean */
+.ContextMenuPopupBody {
+    background: transparent !important;
+}
+
+/* border-box: Steam sizes the menu window, then pins min-width to that width.
+   With content-box the padding and border would push the right edge out of the window. */
+.contextMenu {
+    box-sizing: border-box;
+    padding: 6px !important;
+    border: 1px solid var(--mr-line-strong) !important;
+    border-radius: var(--mr-r-md) !important;
+    background: var(--mr-surface) !important;
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.45) !important;
+}
+
+/* Steam paints its own grey panel (plus a gradient and border on the bell menu)
+   on the inner layer, covering the frame above. Clear it so the frame shows. */
+.contextMenu .contextMenuContents {
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: var(--mr-r-xs) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Rows (confirmed: role="menuitem" class="... contextMenuItem") */
+.contextMenu .contextMenuItem {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 12px !important;
+    border-radius: var(--mr-r-xs);
+    color: var(--mr-text) !important;
+    font-weight: 500;
+}
+
+.contextMenu .contextMenuItem:hover,
+.contextMenu .contextMenuItem:focus {
+    background: var(--mr-raised) !important;
+}
+
+/* Divider lines (<hr class="... MenuItem Separator">) */
+.contextMenu .Separator {
+    height: 1px !important;
+    margin: 6px 4px !important;
+    border: 0 !important;
+    background: var(--mr-line) !important;
+}
+
+/* Dropdown buttons. Steam fills the label and the arrow with separate translucent white
+   blocks, which show as a lighter rectangle inside the rounded button. */
+.DialogDropDown {
+    border: 1px solid var(--mr-line-strong) !important;
+    border-radius: var(--mr-r-xs) !important;
+    background: var(--mr-surface) !important;
+    box-shadow: none !important;
+}
+
+.DialogDropDown:hover {
+    border-color: var(--mr-a) !important;
+}
+
+.DialogDropDown .DialogDropDown_CurrentDisplay,
+.DialogDropDown .DialogDropDown_Arrow {
+    border-radius: 0 !important;
+    background: transparent !important;
+}
+
+/* Dropdown lists ("Sort by", Settings pickers...). Steam draws these inside the window,
+   not as a menu window: grey panel, square corners, white highlight. Match the menus above.
+   Steam paints the panel with ".DesktopUI .DialogMenuPosition > div {... !important}",
+   so the panel rule needs that scope to win. */
+.DialogDropDownMenu,
+.DesktopUI .DialogMenuPosition > div.DialogDropDownMenu {
+    padding: 6px !important;
+    border: 1px solid var(--mr-line-strong) !important;
+    border-radius: var(--mr-r-md) !important;
+    background: var(--mr-surface) !important;
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.45) !important;
+}
+
+.DialogDropDownMenu .DialogDropDownMenu_Item {
+    min-height: 34px;
+    border-radius: var(--mr-r-xs) !important;
+    background: transparent !important;
+    color: var(--mr-text) !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0 !important;
+}
+
+.DialogDropDownMenu .DialogDropDownMenu_Item:hover,
+.DialogDropDownMenu .DialogDropDownMenu_Item:focus,
+.DialogDropDownMenu .DialogDropDownMenu_Item.gpfocus {
+    background: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+    outline: none !important;
+}
+
+/* Online / Away / Invisible / Offline rows in the Friends menu */
+.contextMenu .StatusEntry {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ========== 6. Dialogs ==========
+   Settings, Properties and other pop-up dialogs (ModalDialogPopup / FullModalOverlay
+   windows) load this file. Dialog* are Steam's readable dialog names; confirm in dev tools. */
+
+.ModalOverlayBackground {
+    background: rgb(5 7 10 / 0.7) !important;
+}
+
+.DialogContent {
+    border: 1px solid var(--mr-line-strong) !important;
+    border-radius: var(--mr-r-md) !important;
+    background: var(--mr-surface) !important;
+    box-shadow: 0 24px 64px rgb(0 0 0 / 0.5) !important;
+}
+
+.DialogHeader {
+    color: var(--mr-text) !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+.DialogBody {
+    color: var(--mr-text) !important;
+}
+
+.DialogLabel,
+.DialogBodyText {
+    color: var(--mr-muted) !important;
+}
+
+.DialogFooter {
+    border-top: 1px solid var(--mr-line) !important;
+}
+
+/* ========== 7. Toasts, notifications and find bar ==========
+   Notification pop-ups, the notifications menu, the in-game overlay browser
+   and the Ctrl+F find bar also load this file. */
+
+/* One notification pop-up in the corner of the screen */
+.DesktopToastTemplate {
+    border: 1px solid var(--mr-line-strong) !important;
+    border-radius: var(--mr-r-md) !important;
+    background: var(--mr-surface) !important;
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.45) !important;
+    overflow: hidden;
+}
+
+.DesktopToastTemplate .Title {
+    color: var(--mr-text) !important;
+    font-weight: 600;
+}
+
+.DesktopToastTemplate .StandardNotificationDescription,
+.DesktopToastTemplate .StandardNotificationSubText {
+    color: var(--mr-muted) !important;
+}
+
+/* Unread rows in the bell menu */
+.StandardTemplateContainer.Unread {
+    background: var(--mr-raised) !important;
+}
+
+/* Ctrl+F bar on Store/Community pages */
+.FindBar {
+    border: 1px solid var(--mr-line-strong) !important;
+    border-radius: var(--mr-r-sm) !important;
+    background: var(--mr-surface) !important;
+}
+
+/* ========== 8. Library ========== */
+
+/* Left game list */
+.LeftListSizableContainer {
+    background: var(--mr-rail) !important;
+    border-right: 1px solid var(--mr-line);
+}
+
+/* Steam lays a grey gradient panel over the rail color; the list sits on the rail itself */
+.LeftListSizableContainer > div,
+.LeftListSizableContainer .GameListHomeAndSearch {
+    background: transparent !important;
+}
+
+/* Search box: Steam wraps the input in a translucent grey block */
+.LeftListSizableContainer div:has(> .SearchInput),
+.LeftListSizableContainer .SearchInput {
+    background: transparent !important;
+}
+
+.LeftListSizableContainer .SearchInput input {
+    height: 34px;
+    border-radius: var(--mr-r-sm) !important;
+    /* Room for the magnifier on the left and the Ctrl K hint on the right */
+    padding-left: 34px !important;
+    padding-right: 52px !important;
+    background: var(--mr-surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239AA4B2' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") 11px center / 16px no-repeat !important;
+    border: 1px solid var(--mr-line-strong) !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+}
+
+.LeftListSizableContainer .SearchInput input::placeholder {
+    color: var(--mr-muted) !important;
+    opacity: 1 !important;
+}
+
+/* "Ctrl K" hint, added by libraryroot.custom.js; gone while typing */
+.LeftListSizableContainer .SearchInput {
+    position: relative;
+}
+
+.LeftListSizableContainer .SearchInput .mr-kbd {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    /* Steam's input wrapper is absolutely positioned at z-index 2 */
+    z-index: 3;
+    padding: 1px 6px;
+    border: 1px solid var(--mr-line-strong);
+    border-radius: 6px;
+    color: var(--mr-muted);
+    font: 500 11px/16px var(--mr-font);
+    pointer-events: none;
+}
+
+.LeftListSizableContainer .SearchInput:focus-within .mr-kbd,
+.LeftListSizableContainer .SearchInput:has(input:not(:placeholder-shown)) .mr-kbd {
+    display: none;
+}
+
+/* Downloads item for the left rail (libraryroot.custom.js). Only layouts/rail.css shows it. */
+.mr-rail-item {
+    display: none;
+}
+
+.LibraryWindowDivider {
+    background: var(--mr-line) !important;
+}
+
+/* "Home" and the collections button: rail-style items */
+.GameListHomeAndSearch .Bar {
+    border-radius: var(--mr-r-xs) !important;
+    background: transparent !important;
+    color: var(--mr-muted) !important;
+    transition: background-color var(--mr-ease), color var(--mr-ease);
+}
+
+.GameListHomeAndSearch .Bar:hover {
+    background: var(--mr-surface) !important;
+    color: var(--mr-text) !important;
+}
+
+.GameListHomeAndSearch .Bar.Selected {
+    background: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+}
+
+.GameListHomeAndSearch .Bar .Icon {
+    background: transparent !important;
+}
+
+/* "Home" draws a large faded Steam logo behind its label */
+.GameListHomeAndSearch .HomeBox .Bar .Icon {
+    display: none !important;
+}
+
+/* "Games and Software" view picker */
+.LeftListSizableContainer .SearchBar .MenuHeader {
+    border-radius: var(--mr-r-xs);
+    color: var(--mr-text) !important;
+}
+
+.LeftListSizableContainer .SearchBar .MenuHeader:hover {
+    background: var(--mr-surface) !important;
+}
+
+.LeftListSizableContainer .AdvancedSearchButton {
+    border-radius: var(--mr-r-xs);
+}
+
+.LeftListSizableContainer .AdvancedSearchButton:hover {
+    background: var(--mr-surface) !important;
+}
+
+/* Group headers ("Favorites", "Uncategorized"): small muted labels, as in the mockup */
+.LeftListSizableContainer .SectionHeaderContent,
+.LeftListSizableContainer .SectionName {
+    color: var(--mr-muted) !important;
+    font-size: 12px !important;
+    font-weight: 600;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+/* Group header rows: Steam fades a slate band behind them */
+.LeftListSizableContainer .CollapseIconParent {
+    background: transparent !important;
+    border-radius: 6px;
+}
+
+.LeftListSizableContainer .CollapseIconParent:hover {
+    background: var(--mr-surface) !important;
+}
+
+.LeftListSizableContainer .SectionCount {
+    color: var(--mr-muted) !important;
+    opacity: 0.7;
+}
+
+.LeftListSizableContainer .SectionRule {
+    opacity: 0.25;
+}
+
+/* Game rows. Heights stay Steam's: the list is virtualized and positions rows by height. */
+.LeftListSizableContainer .GameListEntryContainer {
+    border-radius: 6px;
+    transition: background-color var(--mr-ease);
+}
+
+.LeftListSizableContainer .GameListEntryContainer:hover {
+    background: var(--mr-surface) !important;
+}
+
+/* Steam paints the selected row's wrapper blue; the row itself carries the highlight */
+.LeftListSizableContainer .Selected:has(> .GameListEntryContainer) {
+    background: transparent !important;
+}
+
+.LeftListSizableContainer .Selected > .GameListEntryContainer,
+.LeftListSizableContainer .GameListEntryContainer.Selected {
+    position: relative;
+    background: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+}
+
+/* Accent marker as a short straight bar; an inset shadow would bend round the rounded corners */
+.LeftListSizableContainer .Selected > .GameListEntryContainer::before,
+.LeftListSizableContainer .GameListEntryContainer.Selected::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 5px;
+    bottom: 5px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: var(--mr-a);
+}
+
+.LeftListSizableContainer .GameIcon,
+.LeftListSizableContainer .GameIcon img {
+    border-radius: 4px;
+}
+
+/* One game cover in the library grid */
+.LibraryItemBox,
+.LibraryItemBox .Capsule {
+    border-radius: var(--mr-r-md) !important;
+    overflow: hidden;
+}
+
+/* Play / Install button */
+.PlayButtonContainer,
+.PlayButtonContainer .PlayButton {
+    border-radius: var(--mr-r-md) !important;
+}
+
+.PlayButtonContainer.Green .PlayButton {
+    background: var(--mr-a) !important;
+    color: var(--mr-on-a) !important;
+    font-weight: 600;
+}
+
+.PlayButtonContainer.Green .PlayButton svg {
+    fill: currentColor;
+}
+
+/* "Play", not "PLAY" */
+.PlayButtonContainer .PlayButton .ButtonText {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+/* Small headings: "Recent Games", "Sort by", "Time played", game page sections */
+.ShowcaseHeader .DialogDropDown_CurrentDisplay,
+.SortingDropDownLabel,
+.PlaytimeDetails.Header,
+.AppDetailsSection .SectionHeader {
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    color: var(--mr-muted) !important;
+}
+
+/* Download bar in the bottom bar. Steam colors it with a variable, so set that. */
+.DownloadStatus .ProgressBar {
+    --color-progress-bar-foreground: var(--mr-a) !important;
+    --color-progress-bar-background: var(--mr-line) !important;
+}
+
+/* Wallet balance next to the account name */
+.WalletBalance {
+    color: var(--mr-ok) !important;
+    font-weight: 600;
+}
+
+/* ========== 9. Game page, as cards (mockup: "Game page") ========== */
+
+/* Flat page ground instead of Steam's grey glass and blurred game art */
+.AppDetailsTransitionGroup,
+.AppDetailsMain .Body.ScrollContainer {
+    background: var(--mr-bg) !important;
+}
+
+.AppDetailsOverviewPanel .Backdrop,
+.AppDetailsMain .StickyHeaderShadow {
+    display: none !important;
+}
+
+/* Hero: the whole artwork in an inset rounded card.
+   Steam caps the hero at 320px and zooms the art 120% for parallax, which crops it;
+   --header-height (set by Steam from the panel width) already fits the art, so drop the cap.
+   The art layer is drawn in 3D (translateZ + scale(2)); a clip on .TopCapsule would flatten
+   that and show the art at 2x, so the clip goes on the art layer itself. */
+.TopCapsule,
+.TopCapsule .HeaderBackgroundImage {
+    max-height: none !important;
+}
+
+.TopCapsule .HeaderBackgroundImage {
+    clip-path: inset(16px 16px 8px 16px round 16px);
+}
+
+.TopCapsule .HeaderBackgroundImage .ImgContainer {
+    box-sizing: border-box;
+    height: 100% !important;
+    padding: 16px 16px 8px;
+}
+
+/* contain, not cover: nothing is cut off; Steam's blurred copy fills any sliver left over */
+.TopCapsule .HeaderBackgroundImage .ImgContainer img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+}
+
+/* Play bar under the hero: a bordered card */
+.AppDetailsOverviewPanel .PlayBar.Glassy {
+    width: auto !important;
+    margin: 0 16px;
+    border: 1px solid var(--mr-line);
+    border-radius: var(--mr-r-md);
+    background: var(--mr-surface) !important;
+}
+
+/* The same bar once it sticks to the top while scrolling */
+.AppDetailsMain > .PlayBar.Container .PlayBar.Glassy {
+    border-bottom: 1px solid var(--mr-line);
+    background: var(--mr-rail) !important;
+}
+
+.PlayBar .PlayBarLabel {
+    color: var(--mr-muted) !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+.PlayBar .PlayBarDetailLabel {
+    color: var(--mr-text) !important;
+    font-weight: 600;
+}
+
+/* "Game" / "Soundtrack" label on the hero: a pill chip, like the mockup's tags */
+.TopCapsule .HeaderFeatures .InCollection {
+    padding: 2px 10px !important;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: 999px !important;
+    background: rgb(10 13 18 / 0.6) !important;
+    color: var(--mr-text) !important;
+    font-size: 11px !important;
+    font-weight: 500;
+}
+
+/* Gear, ..., favorite: outlined square buttons */
+.PlayBar .AppButtonsContainer .MenuButton {
+    box-sizing: border-box;
+    border: 1px solid var(--mr-line-strong) !important;
+    border-radius: var(--mr-r-xs) !important;
+    background: transparent !important;
+    color: var(--mr-muted) !important;
+    transition: background-color var(--mr-ease), color var(--mr-ease);
+}
+
+.PlayBar .AppButtonsContainer .MenuButton:hover {
+    background: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+}
+
+.PlayBar .GameStatIcon {
+    color: var(--mr-muted);
+}
+
+/* Store page / Community hub / Discussions / Guides / Support: an underlined tab strip */
+.AppDetailsOverviewPanel .LinksSection {
+    padding: 0 16px;
+    background: transparent !important;
+}
+
+.AppDetailsOverviewPanel .LinksSection .AppDetailsSectionContainer {
+    margin: 0 !important;
+    border: 0;
+    border-bottom: 1px solid var(--mr-line);
+    border-radius: 0;
+    background: transparent !important;
+}
+
+.LinksSection .LinksSectionBody {
+    background: transparent !important;
+}
+
+.LinksSection .Link {
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: var(--mr-muted) !important;
+    font-weight: 500;
+    transition: color var(--mr-ease), box-shadow var(--mr-ease);
+}
+
+.LinksSection .Link .Text {
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+.LinksSection .Link:hover {
+    color: var(--mr-text) !important;
+    box-shadow: inset 0 -2px 0 var(--mr-a);
+}
+
+/* "i" game info panel (description, developer, features) as a card */
+.AppGameInfoContainer {
+    background: transparent !important;
+}
+
+.AppGameInfoContainer > .Container {
+    box-sizing: border-box;
+    border: 1px solid var(--mr-line);
+    border-radius: var(--mr-r-md);
+    background: var(--mr-surface) !important;
+}
+
+.AppGameInfoContainer .SectionContainer {
+    border-radius: var(--mr-r-xs);
+    background: var(--mr-raised) !important;
+}
+
+.AppGameInfoContainer .GameInfoShadow {
+    display: none !important;
+}
+
+.AppGameInfoContainer .Label {
+    color: var(--mr-muted) !important;
+}
+
+.AppGameInfoContainer .Association .Name {
+    color: var(--mr-a) !important;
+}
+
+.AppGameInfoContainer .BoxArt {
+    border-radius: var(--mr-r-xs);
+    overflow: hidden;
+}
+
+/* Sections (Activity, Friends who play, Achievements...) as cards */
+.AppDetailsOverviewPanel .ColumnContainer .AppDetailsSection,
+.AppDetailsOverviewPanel .ReviewContainer {
+    box-sizing: border-box;
+    border: 1px solid var(--mr-line);
+    border-radius: var(--mr-r-md);
+    background: var(--mr-surface) !important;
+}
+
+.AppDetailsOverviewPanel .ColumnContainer .AppDetailsSection {
+    padding: 12px 0;
+}
+
+.AppDetailsOverviewPanel .AppDetailsSectionContainer {
+    background: transparent !important;
+}
+
+.AppDetailsOverviewPanel .AppDetailsSection .SectionHeader {
+    color: var(--mr-text) !important;
+    font-weight: 600 !important;
+}
+
+/* "New Note", "View all my reviews"...: small outlined buttons (mockup: "Verify files", "Move") */
+.AppDetailsOverviewPanel .AppDetailsButton.DialogButton {
+    width: auto !important;
+    min-width: 0 !important;
+    padding: 5px 12px !important;
+    border: 1px solid var(--mr-line-strong) !important;
+    line-height: 16px !important;
+    border-radius: var(--mr-r-xs) !important;
+    background: transparent !important;
+    font-size: 12px !important;
+    font-weight: 500;
+}
+
+.AppDetailsOverviewPanel .AppDetailsButton.DialogButton:hover {
+    background: var(--mr-raised) !important;
+}
+
+/* Activity feed */
+.AppDetailsOverviewPanel .ViewLastNews {
+    border-radius: 999px;
+    background: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+}
+
+.AppDetailsOverviewPanel .AppActivityDay {
+    border-top: 1px solid var(--mr-line);
+}
+
+/* "NOVEMBER 5" date labels */
+.AppDetailsOverviewPanel .AppActivityDate {
+    color: var(--mr-muted) !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+/* News posts in the feed: a raised card instead of Steam's grey radial glow */
+.AppDetailsOverviewPanel .PartnerEventMediumImage,
+.AppDetailsOverviewPanel .PartnerEventMediumImage_Container {
+    background: var(--mr-raised) !important;
+    border-radius: var(--mr-r-md);
+}
+
+.AppDetailsOverviewPanel .PartnerEventMediumImage {
+    border: 1px solid var(--mr-line);
+    overflow: hidden;
+}
+
+/* A news post opened over the game page */
+.AppPartnerEventsPage .PartnerEvent.InLibraryView {
+    border: 1px solid var(--mr-line-strong);
+    border-radius: var(--mr-r-lg) !important;
+    background: var(--mr-surface) !important;
+    box-shadow: 0 24px 64px rgb(0 0 0 / 0.5) !important;
+}
+
+.AppPartnerEventsPage .EventDetailTitleContainer {
+    background: transparent !important;
+    border-bottom: 1px solid var(--mr-line);
+}
+
+.AppPartnerEventsPage .CloseButton {
+    border: 1px solid var(--mr-line-strong);
+    background: var(--mr-raised) !important;
+}
+
+.AppPartnerEventsPage .CloseButton:hover {
+    background: var(--mr-line-strong) !important;
+}
+
+/* Community content tiles */
+.AppDetailsOverviewPanel .CommunityItem {
+    border-radius: var(--mr-r-xs);
+    overflow: hidden;
+}
+
+.AppDetailsOverviewPanel .CommunityItem.Blank {
+    background: var(--mr-raised) !important;
+}
+
+/* ========== 10. Library home (mockup: "Library") ========== */
+
+/* The page wrapper above Library home carries Steam's grey gradient; it shows behind the heading */
+.LibraryHome,
+.AppDetailsMain > div:has(> .InnerContainer > .LibraryHome) {
+    background: var(--mr-bg) !important;
+}
+
+/* Covers: the mockup uses a tighter corner than the cards */
+.LibraryHome .LibraryItemBox,
+.LibraryHome .LibraryItemBox .Capsule {
+    border-radius: var(--mr-r-xs) !important;
+}
+
+/* Flat covers: no glare sweep, an accent ring on hover and focus instead */
+.LibraryHome .LibraryItemBoxShine {
+    display: none !important;
+}
+
+.LibraryHome .LibraryItemBox {
+    transition: box-shadow var(--mr-ease);
+}
+
+.LibraryHome .Draggable:hover .LibraryItemBox,
+.LibraryHome .Focusable:focus-visible .LibraryItemBox {
+    box-shadow: 0 0 0 2px var(--mr-a) !important;
+}
+
+/* "Jump back in" (Recent Games) tiles: a card with a flat footer */
+.LibraryHome .RecentGame .LibraryItemBox {
+    border: 1px solid var(--mr-line);
+    border-radius: var(--mr-r-md) !important;
+    background: var(--mr-surface) !important;
+}
+
+.LibraryHome .RecentGameFooter {
+    background: var(--mr-surface) !important;
+    border-top: 1px solid var(--mr-line);
+}
+
+.LibraryHome .RecentGameFooter .FooterBlurImageContainer {
+    display: none !important;
+}
+
+.LibraryHome .PlaytimeDetails.PlayedRecent,
+.LibraryHome .PlaytimeDetails.PlayedTotal {
+    color: var(--mr-text) !important;
+}
+
+.LibraryHome .AddedDate,
+.LibraryHome .PlayNextSubHead {
+    color: var(--mr-muted) !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+/* Round Play / Download button on recent tiles */
+.LibraryHome .LibraryItemActionButton {
+    border-radius: var(--mr-r-md) !important;
+    background: var(--mr-a) !important;
+    color: var(--mr-on-a) !important;
+    box-shadow: 0 6px 16px rgb(0 0 0 / 0.4) !important;
+}
+
+.LibraryHome .LibraryItemActionButton svg {
+    fill: currentColor;
+}
+
+/* What's New: event cards */
+.UpdatesContainer {
+    background: var(--mr-bg) !important;
+}
+
+.UpdatesContainer .HeaderPageControls .Name {
+    color: var(--mr-text) !important;
+    font-weight: 600;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+.UpdatesContainer .EventTime {
+    color: var(--mr-muted) !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+/* One What's New item: date, image and title in a single card */
+.UpdatesContainer .PartnerEventRowCapsule {
+    box-sizing: border-box;
+    padding: 10px;
+    border: 1px solid var(--mr-line);
+    border-radius: var(--mr-r-md);
+    background: var(--mr-surface) !important;
+    transition: border-color var(--mr-ease);
+}
+
+.UpdatesContainer .PartnerEventRowCapsule:hover {
+    border-color: var(--mr-line-strong);
+}
+
+/* The image block inside the card */
+.UpdatesContainer .PartnerEventRowCapsule_Container {
+    border-radius: var(--mr-r-xs);
+    overflow: hidden;
+}
+
+.UpdatesContainer .EventSummaryType {
+    color: var(--mr-a) !important;
+}
+
+.UpdatesContainer .PartnerEventRowCapsule_TextTitle {
+    color: var(--mr-text) !important;
+    font-weight: 600;
+}
+
+.UpdatesContainer .GameName {
+    color: var(--mr-muted) !important;
+}
+
+/* Page arrows on What's New and the shelves */
+.HeaderPageControls .PageLeft,
+.HeaderPageControls .PageRight,
+.ShowcaseHeader .PageButtons .PageLeft,
+.ShowcaseHeader .PageButtons .PageRight {
+    border-radius: 6px;
+    color: var(--mr-muted);
+}
+
+.HeaderPageControls .PageLeft:not(.Disabled):hover,
+.HeaderPageControls .PageRight:not(.Disabled):hover,
+.ShowcaseHeader .PageButtons .PageLeft:not(.Disabled):hover,
+.ShowcaseHeader .PageButtons .PageRight:not(.Disabled):hover {
+    background: var(--mr-raised);
+    color: var(--mr-text);
+}
+
+/* "Add shelf" */
+.LibraryHome .AddShowcase {
+    border: 1px solid var(--mr-line-strong);
+    border-radius: 999px !important;
+    background: var(--mr-surface) !important;
+    color: var(--mr-muted) !important;
+}
+
+.LibraryHome .AddShowcase:not(.Disabled):hover {
+    border-color: var(--mr-a);
+    color: var(--mr-text) !important;
+}
+
+.LibraryHome .AddShowcaseRow .Rule {
+    background: var(--mr-line) !important;
+}
+
+/* Shelf titles ("Recent Games", "Play Next") read as headings, not dropdowns */
+.ShowcaseHeader .DialogDropDown_CurrentDisplay {
+    color: var(--mr-text) !important;
+    font-weight: 600 !important;
+}
+
+/* Shelf picker reads as the shelf's heading (mockup: "Jump back in") */
+.ShowcaseHeader .CollectionDropDown .DialogDropDown {
+    padding: 0 8px 0 2px !important;
+    border: 0 !important;
+    border-radius: var(--mr-r-xs) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.ShowcaseHeader .CollectionDropDown .DialogDropDown_CurrentDisplay {
+    font-size: 15px !important;
+}
+
+.ShowcaseHeader .CollectionDropDown .DialogDropDown:hover {
+    background: var(--mr-surface) !important;
+}
+
+/* Sort menus as pill chips (mockup: "Sort · Recently played") */
+.SortingDropDown .DialogDropDown {
+    height: 28px !important;
+    padding: 0 12px !important;
+    border: 1px solid var(--mr-line-strong) !important;
+    border-radius: 999px !important;
+    background: var(--mr-surface) !important;
+    box-shadow: none !important;
+}
+
+.SortingDropDown .DialogDropDown:hover {
+    border-color: var(--mr-a) !important;
+}
+
+/* Thin rule next to shelf titles */
+.ShowcaseHeader .Rule {
+    background: var(--mr-line) !important;
+}
+
+/* Page heading with a summary line on Library home and Downloads (mockup: "Library", "Downloads").
+   libraryroot.custom.js adds the element; Steam has no heading of its own there. */
+.mr-page-head {
+    padding: 20px 24px 4px;
+}
+
+.mr-page-head h1 {
+    margin: 0;
+    color: var(--mr-text) !important;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+}
+
+.mr-page-head p {
+    margin: 4px 0 0;
+    /* !important: the Downloads page tints its text */
+    color: var(--mr-muted) !important;
+    font-size: 13px;
+}
+
+.mr-page-head p:empty {
+    display: none;
+}
+
+/* Downloads: the speed card sits closer under its heading */
+.DownloadsPage > .mr-page-head + .TopSection {
+    padding-top: 16px !important;
+}
+
+/* ========== 11. Downloads (mockup: "Downloads") ========== */
+
+.DownloadsPage {
+    background: var(--mr-bg) !important;
+}
+
+/* Speed graph and the current download: one card at the top */
+.DownloadsPage .TopSection {
+    padding: 20px 24px 0;
+}
+
+.DownloadsPage .TopSection > .Section {
+    border: 1px solid var(--mr-line);
+    border-radius: var(--mr-r-lg);
+    background: var(--mr-surface) !important;
+    overflow: hidden;
+}
+
+/* With nothing downloading Steam fills the card with a blue gradient */
+.DownloadsPage .HeroAndLogo.Empty {
+    background: none !important;
+}
+
+/* Fade from the card color over the game art, instead of Steam's navy */
+.DownloadsPage .TopSection .Gradient {
+    background: linear-gradient(to right, var(--mr-surface) 0%, var(--mr-surface) 35%, transparent 100%) !important;
+}
+
+.DownloadsPage .DownloadGraph svg path:not(.GraphLine) {
+    fill: var(--mr-a) !important;
+    opacity: 0.55;
+}
+
+.DownloadsPage .GraphLine {
+    stroke: var(--mr-ok) !important;
+}
+
+.DownloadsPage .LegendBox.Disk {
+    background: var(--mr-ok) !important;
+}
+
+.DownloadsPage .DownloadGraphStats,
+.DownloadsPage .DownloadGraphStats * {
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+.DownloadsPage .DownloadGraphStats .Figure {
+    color: var(--mr-text) !important;
+    font-weight: 600;
+}
+
+/* Settings gear: outlined square button */
+.DownloadsPage .SettingsButton .DialogButton,
+.DownloadsPage .SectionItemButtons .DialogButton {
+    border: 1px solid var(--mr-line-strong) !important;
+    border-radius: var(--mr-r-sm) !important;
+    background: transparent !important;
+    color: var(--mr-text) !important;
+}
+
+.DownloadsPage .SettingsButton .DialogButton:hover,
+.DownloadsPage .SectionItemButtons .DialogButton:hover {
+    background: var(--mr-raised) !important;
+}
+
+/* "Up Next (0)", "Scheduled (1)" */
+.DownloadsPage .ItemListWrapper {
+    padding: 0 8px;
+}
+
+.DownloadsPage .SectionTitle {
+    color: var(--mr-text) !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+}
+
+.DownloadsPage .SectionTitle .Rule {
+    background: var(--mr-line) !important;
+}
+
+.DownloadsPage .EmptyTransfers .Text,
+.DownloadsPage .EmptyQueue .Text {
+    color: var(--mr-muted) !important;
+    font-size: 13px;
+}
+
+/* One queued game per card */
+.DownloadsPage .SectionItem {
+    margin-bottom: 8px;
+    padding: 10px 14px 10px 10px;
+    border: 1px solid var(--mr-line);
+    border-radius: 14px;
+    background: var(--mr-surface) !important;
+    box-sizing: border-box;
+    transition: border-color var(--mr-ease);
+}
+
+.DownloadsPage .SectionItem:hover {
+    border-color: var(--mr-line-strong);
+}
+
+.DownloadsPage .SectionItem .LibraryItemBox {
+    border-radius: var(--mr-r-xs) !important;
+}
+
+.DownloadsPage .SectionItem .LibraryItemBoxShine {
+    display: none !important;
+}
+
+.DownloadsPage .DownloadItemName .Name {
+    color: var(--mr-text) !important;
+    font-weight: 600;
+}
+
+.DownloadsPage .SectionItemStatus {
+    color: var(--mr-muted) !important;
+    font-size: 12px !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+.DownloadsPage .PatchNotes,
+.DownloadsPage .PatchNotes .Text {
+    color: var(--mr-a) !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+.DownloadsPage .PatchNotes svg {
+    fill: currentColor;
+}
+
+/* Progress bars on active downloads. Steam colors them with variables. */
+.DownloadsPage {
+    --color-progress-bar-foreground: var(--mr-a);
+    --color-progress-bar-background: var(--mr-line);
+}

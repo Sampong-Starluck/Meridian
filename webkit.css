@@ -1,0 +1,294 @@
+/* Meridian · Store and Community pages inside Steam
+   (any *.steampowered.com or steamcommunity.com page)
+   These pages use long-lived class names, so nothing needs mapping. */
+
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap");
+
+:root {
+    --mr-bg: #0E1116;
+    --mr-surface: #161B22;
+    --mr-raised: #1A212C;
+    --mr-line: #1F2732;
+    --mr-line-strong: #2A3340;
+    --mr-text: #E8ECF1;
+    --mr-muted: #9AA4B2;
+    --mr-ok: #7DD3A7;
+    --mr-a: var(--mr-accent, #6EA8FE);
+    --mr-on-a: #0A0D12;
+    --mr-r-sm: 10px;
+    --mr-r-lg: 16px;
+    --mr-font: "Geist", system-ui, "Segoe UI", sans-serif;
+}
+
+/* ========== 1. Shared ========== */
+
+body,
+.responsive_page_frame {
+    background: var(--mr-bg) !important;
+    font-family: var(--mr-font) !important;
+}
+
+::selection {
+    background: var(--mr-a);
+    color: var(--mr-on-a);
+}
+
+:focus-visible {
+    outline: 2px solid var(--mr-a) !important;
+    outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--mr-line-strong) padding-box;
+    border: 3px solid transparent;
+    border-radius: 999px;
+}
+
+/* Buttons: one flat primary color on both Store and Community */
+.btn_green_steamui,
+.btn_blue_steamui,
+.btn_green_white_innerfade,
+.btnv6_blue_hoverfade {
+    border-radius: var(--mr-r-sm) !important;
+    overflow: hidden;
+}
+
+.btn_green_steamui>span,
+.btn_blue_steamui>span,
+.btn_green_white_innerfade>span {
+    background: var(--mr-a) !important;
+    color: var(--mr-on-a) !important;
+    font-weight: 600;
+}
+
+.btnv6_blue_hoverfade>span {
+    background: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+}
+
+/* ========== 2. Store ========== */
+
+#store_nav_area .store_nav_bg {
+    background: var(--mr-surface) !important;
+    border-radius: var(--mr-r-sm);
+    box-shadow: none !important;
+}
+
+/* Prices: final price reads first, discount stays obvious */
+.discount_block {
+    border-radius: var(--mr-r-sm);
+    overflow: hidden;
+}
+
+.discount_pct {
+    background: var(--mr-ok) !important;
+    color: var(--mr-on-a) !important;
+    font-weight: 700;
+}
+
+.discount_prices {
+    background: var(--mr-raised) !important;
+}
+
+.discount_original_price {
+    color: var(--mr-muted) !important;
+}
+
+.discount_final_price {
+    color: var(--mr-text) !important;
+    font-weight: 600;
+}
+
+/* Buy box */
+.game_area_purchase_game {
+    background: var(--mr-surface) !important;
+    border: 1px solid var(--mr-line);
+    border-radius: var(--mr-r-lg);
+}
+
+/* Home: flat ground under the sale artwork */
+.home_page_body_ctn,
+.home_ctn,
+.store_bg_overlay {
+    background-color: var(--mr-bg) !important;
+}
+
+/* Shelf titles ("Featured & Recommended", "Special Offers") */
+.home_title,
+.home_page_content h2,
+.home_page_content .home_title {
+    color: var(--mr-text) !important;
+    font-family: var(--mr-font) !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+/* Featured carousel: one rounded card, image left, details right (mockup: "Paper Lanterns") */
+.store_main_capsule {
+    border: 1px solid var(--mr-line);
+    border-radius: var(--mr-r-lg);
+    background: var(--mr-surface) !important;
+    box-shadow: none !important;
+    overflow: hidden;
+}
+
+.store_main_capsule .info {
+    background: var(--mr-surface) !important;
+}
+
+.store_main_capsule .app_name {
+    color: var(--mr-text) !important;
+    font-family: var(--mr-font) !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+}
+
+.store_main_capsule .screenshots > div {
+    border-radius: var(--mr-r-sm);
+}
+
+.store_main_capsule .reason,
+.store_main_capsule .topseller_subtext {
+    color: var(--mr-muted) !important;
+}
+
+.store_main_capsule .topseller_title {
+    color: var(--mr-text) !important;
+    font-weight: 600;
+}
+
+/* Carousel dots and arrows */
+.carousel_container .carousel_thumbs > div {
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 999px !important;
+    background: var(--mr-line-strong) !important;
+    transition: width 150ms ease, background-color 150ms ease;
+}
+
+.carousel_container .carousel_thumbs > div.focus {
+    width: 20px !important;
+    background: var(--mr-a) !important;
+}
+
+.carousel_container .arrow {
+    border-radius: var(--mr-r-sm);
+    background: transparent !important;
+}
+
+.carousel_container .arrow:hover {
+    background: var(--mr-surface) !important;
+}
+
+/* Capsule grids and rows */
+.store_capsule,
+.tab_item,
+.special_tiles .special {
+    border-radius: var(--mr-r-sm);
+    overflow: hidden;
+}
+
+.tab_item {
+    margin-bottom: 4px;
+    border: 1px solid var(--mr-line);
+    background: var(--mr-surface) !important;
+}
+
+.tab_item:hover,
+.tab_item.focus {
+    background: var(--mr-raised) !important;
+}
+
+.tab_item_name {
+    color: var(--mr-text) !important;
+}
+
+.tab_item_details,
+.tab_item_top_tags {
+    color: var(--mr-muted) !important;
+}
+
+/* "New & Trending / Top Sellers / Upcoming" tabs: underlined text tabs (mockup: "For you · Deals") */
+.home_tabs_row .home_tab {
+    background: transparent !important;
+}
+
+.home_tabs_row .home_tab .tab_content {
+    background: transparent !important;
+    color: var(--mr-muted) !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+.home_tabs_row .home_tab:hover .tab_content {
+    color: var(--mr-text) !important;
+}
+
+.home_tabs_row .home_tab.active .tab_content {
+    color: var(--mr-text) !important;
+    box-shadow: inset 0 -2px 0 var(--mr-a);
+}
+
+.home_tabs_row {
+    border-bottom: 1px solid var(--mr-line);
+}
+
+/* Discount badge reads like the mockup's green chip */
+.discount_pct {
+    border-radius: 6px;
+}
+
+.discount_block.discount_block_inline .discount_prices {
+    background: transparent !important;
+}
+
+/* Gift card shortcut */
+.home_gift_card_link {
+    border-radius: var(--mr-r-sm);
+}
+
+/* Game page header and review summary */
+.apphub_AppName {
+    color: var(--mr-text) !important;
+    font-family: var(--mr-font) !important;
+    font-weight: 700;
+}
+
+.glance_ctn .user_reviews .summary,
+.game_description_snippet {
+    color: var(--mr-muted) !important;
+}
+
+.app_tag {
+    border-radius: 999px !important;
+    background: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+    box-shadow: none !important;
+}
+
+/* ========== 3. Community ========== */
+
+.responsive_page_template_content {
+    background: var(--mr-bg) !important;
+}
+
+/* Profile and group text inputs */
+.responsive_page_template_content textarea,
+.responsive_page_template_content input[type="text"] {
+    border: 1px solid var(--mr-line-strong) !important;
+    border-radius: var(--mr-r-sm) !important;
+    background: var(--mr-surface) !important;
+    color: var(--mr-text) !important;
+}

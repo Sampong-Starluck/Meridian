@@ -1,0 +1,228 @@
+/* Meridian · Big Picture mode, Quick Access menu and Steam main menu
+   (windows: Steam Big Picture Mode, QuickAccess_*, MainMenu_*)
+   Big Picture has two kinds of color:
+   1. A few shared scales (--color-dull-*, --color-accent-*, --color-text-*).
+      Remapping them restyles everything that reads them.
+   2. Colors written straight into each component. Those need a class rule,
+      so section 3 targets the readable class names (BasicHome, QuickAccessMenu...). */
+
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap");
+
+:root {
+    --mr-rail: #0A0D12;
+    --mr-bg: #0E1116;
+    --mr-surface: #161B22;
+    --mr-raised: #1A212C;
+    --mr-line: #1F2732;
+    --mr-line-strong: #2A3340;
+    --mr-text: #E8ECF1;
+    --mr-muted: #9AA4B2;
+    --mr-ok: #7DD3A7;
+    --mr-a: var(--mr-accent, #6EA8FE);
+    --mr-on-a: #0A0D12;
+    --mr-r-md: 12px;
+    --mr-font: "Geist", "Motiva Sans", system-ui, sans-serif;
+}
+
+/* ========== 1. Shared color scales ========== */
+
+:root,
+body {
+    /* Greys, darkest to lightest. Steam has two names for the same ramp. */
+    --color-dull-1: #0A0D12 !important;
+    --color-dull-2: #0E1116 !important;
+    --color-dull-3: #161B22 !important;
+    --color-dull-4: #1A212C !important;
+    --color-dull-5: #1F2732 !important;
+    --color-dull-6: #232B37 !important;
+    --color-dull-7: #2A3340 !important;
+    --color-dull-8: #3A4452 !important;
+    --color-dull-9: #4A5563 !important;
+    --color-dull-10: #7C8796 !important;
+    --color-dull-11: #9AA4B2 !important;
+    --color-dull-12: #E8ECF1 !important;
+
+    --color-greyneutral-1: #0A0D12 !important;
+    --color-greyneutral-2: #0E1116 !important;
+    --color-greyneutral-3: #161B22 !important;
+    --color-greyneutral-4: #1A212C !important;
+    --color-greyneutral-5: #1F2732 !important;
+    --color-greyneutral-6: #232B37 !important;
+    --color-greyneutral-7: #2A3340 !important;
+    --color-greyneutral-8: #3A4452 !important;
+    --color-greyneutral-9: #4A5563 !important;
+    --color-greyneutral-10: #7C8796 !important;
+    --color-greyneutral-11: #9AA4B2 !important;
+    --color-greyneutral-12: #E8ECF1 !important;
+
+    /* Accent ramp built from the one theme accent, dark tints to light */
+    --color-accent-1: color-mix(in srgb, var(--mr-a) 6%, #0E1116) !important;
+    --color-accent-2: color-mix(in srgb, var(--mr-a) 10%, #0E1116) !important;
+    --color-accent-3: color-mix(in srgb, var(--mr-a) 18%, #0E1116) !important;
+    --color-accent-4: color-mix(in srgb, var(--mr-a) 26%, #0E1116) !important;
+    --color-accent-5: color-mix(in srgb, var(--mr-a) 34%, #0E1116) !important;
+    --color-accent-6: color-mix(in srgb, var(--mr-a) 44%, #0E1116) !important;
+    --color-accent-7: color-mix(in srgb, var(--mr-a) 62%, #0E1116) !important;
+    --color-accent-8: var(--mr-a) !important;
+    --color-accent-9: var(--mr-a) !important;
+    --color-accent-10: color-mix(in srgb, var(--mr-a) 85%, #FFFFFF) !important;
+    --color-accent-11: color-mix(in srgb, var(--mr-a) 72%, #FFFFFF) !important;
+    --color-accent-12: color-mix(in srgb, var(--mr-a) 35%, #FFFFFF) !important;
+    --color-accent-contrast: var(--mr-on-a) !important;
+
+    /* Text, brightest to faintest */
+    --color-text-body-title: #E8ECF1 !important;
+    --color-text-light-title: #E8ECF1 !important;
+    --color-text-body-subtitle: #D0D6DE !important;
+    --color-text-light-subtitle: #D0D6DE !important;
+    --color-text-body-body: #B4BCC7 !important;
+    --color-text-light-body: #B4BCC7 !important;
+    --color-text-body-description: #9AA4B2 !important;
+    --color-text-light-description: #9AA4B2 !important;
+    --color-text-body-note: #6B7583 !important;
+    --color-text-light-note: #6B7583 !important;
+
+    /* Steam's own accent setting, used by some newer panels */
+    --SystemAccentColor: var(--mr-a) !important;
+    --virtualmenu-accent: var(--mr-a) !important;
+    --virtualmenupointer-color: var(--mr-a) !important;
+}
+
+body {
+    font-family: var(--mr-font) !important;
+    -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+    background: var(--mr-a);
+    color: var(--mr-on-a);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* ========== 2. Buttons ==========
+   Steam already highlights the focused control (.gpfocus) in hundreds of rules,
+   so Meridian recolors those states instead of adding a second focus ring. */
+
+button.DialogButton {
+    border-radius: var(--mr-r-md) !important;
+    background: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+}
+
+button.DialogButton:hover,
+button.DialogButton.gpfocus {
+    background: var(--mr-line-strong) !important;
+}
+
+/* Play and primary actions: one flat accent, no gradient */
+button.DialogButton.Primary,
+button.DialogButton.GreenPlay,
+button.DialogButton.Primary.gpfocus,
+button.DialogButton.GreenPlay.gpfocus {
+    background: var(--mr-a) !important;
+    color: var(--mr-on-a) !important;
+    font-weight: 600;
+}
+
+button.DialogButton.Primary:hover,
+button.DialogButton.GreenPlay:hover,
+button.DialogButton.Primary.gpfocus,
+button.DialogButton.GreenPlay.gpfocus {
+    filter: brightness(1.1);
+}
+
+/* ========== 3. Surfaces ========== */
+
+/* Window ground and the home page (flat instead of Steam's radial gradient) */
+.BasicUiRoot.BlackBackground {
+    background: var(--mr-rail) !important;
+}
+
+.BasicHome.OpaqueBackground {
+    background: var(--mr-bg) !important;
+}
+
+/* Placeholder behind game covers while they load */
+.GreyBackground {
+    background-color: var(--mr-surface) !important;
+}
+
+/* Game covers and carousel tiles */
+.LibraryItemBox,
+.LibraryItemBox .Capsule,
+.CarouselCapsuleBackgroundGlow {
+    border-radius: var(--mr-r-md) !important;
+    overflow: hidden;
+}
+
+/* Controller focus on a game cover: an accent ring that reads from the couch */
+.gpfocus .LibraryItemBox,
+.LibraryItemBox.gpfocus {
+    box-shadow: 0 0 0 3px var(--mr-a) !important;
+}
+
+/* What's New / Recently completed cards */
+.EventInfo,
+.RecentlyCompletedItem {
+    background: var(--mr-surface) !important;
+}
+
+.RecentlyCompletedItem {
+    border-radius: var(--mr-r-md);
+    overflow: hidden;
+}
+
+.RecentlyCompletedItem .BottomSection {
+    background: var(--mr-raised) !important;
+}
+
+/* Tabs on the home page ("What's new", "Friends"...) */
+.TabRowTabs .Tab {
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+.TabRowTabs .Tab.Selected {
+    background: var(--mr-a) !important;
+    color: var(--mr-on-a) !important;
+}
+
+/* Button hints along the bottom (Menu / Options / Select / Back) */
+.BasicFooter {
+    background: rgb(10 13 18 / 0.85) !important;
+    border-top: 1px solid var(--mr-line);
+}
+
+/* ========== 4. Main menu and Quick Access ========== */
+
+/* Steam button menu (left) */
+.BasicUI > .Menu,
+.QuickAccessMenu,
+.QuickAccessMenu .Menu,
+.QuickAccessMenu .Title {
+    background: var(--mr-rail) !important;
+}
+
+/* Section titles fade into the panel with a glow; match it to the new background */
+.QuickAccessMenu .Title {
+    box-shadow: 0 0 7px 12px var(--mr-rail) !important;
+}
+
+.Menu .ActiveDot {
+    background: var(--mr-a) !important;
+}
+
+/* Quick Access side tabs */
+.QuickAccessMenu .Tab.Selected {
+    background: var(--mr-raised) !important;
+    box-shadow: inset 3px 0 0 var(--mr-a) !important;
+}
