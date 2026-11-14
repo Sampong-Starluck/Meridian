@@ -1,23 +1,29 @@
 /* Meridian · Store and Community pages inside Steam
    (any *.steampowered.com or steamcommunity.com page)
-   These pages use long-lived class names, so nothing needs mapping. */
+   These pages use long-lived class names, so nothing needs mapping.
+   Colors, radii and fonts come from tokens.css. */
 
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap");
+@import url("tokens.css");
 
+/* Steam's newer Store sections have scrambled class names, but they take their greys
+   from these shared variables. Pointing the two blue-grey ramps at the theme's neutrals
+   restyles those sections without naming them. */
 :root {
-    --mr-bg: #0E1116;
-    --mr-surface: #161B22;
-    --mr-raised: #1A212C;
-    --mr-line: #1F2732;
-    --mr-line-strong: #2A3340;
-    --mr-text: #E8ECF1;
-    --mr-muted: #9AA4B2;
-    --mr-ok: #7DD3A7;
-    --mr-a: var(--mr-accent, #6EA8FE);
-    --mr-on-a: #0A0D12;
-    --mr-r-sm: 10px;
-    --mr-r-lg: 16px;
-    --mr-font: "Geist", system-ui, "Segoe UI", sans-serif;
+    --gpSystemLightestGrey: var(--mr-zinc-200);
+    --gpSystemLighterGrey: var(--mr-zinc-300);
+    --gpSystemLightGrey: var(--mr-zinc-400);
+    --gpSystemGrey: var(--mr-zinc-500);
+    --gpSystemDarkGrey: var(--mr-zinc-700);
+    --gpSystemDarkerGrey: var(--mr-zinc-800);
+    --gpSystemDarkestGrey: var(--mr-zinc-950);
+
+    --gpStoreLightestGrey: var(--mr-zinc-200);
+    --gpStoreLighterGrey: var(--mr-zinc-300);
+    --gpStoreLightGrey: var(--mr-zinc-400);
+    --gpStoreGrey: var(--mr-zinc-600);
+    --gpStoreDarkGrey: var(--mr-zinc-800);
+    --gpStoreDarkerGrey: var(--mr-zinc-900);
+    --gpStoreDarkestGrey: var(--mr-zinc-950);
 }
 
 /* ========== 1. Shared ========== */
@@ -51,7 +57,11 @@ body,
 ::-webkit-scrollbar-thumb {
     background: var(--mr-line-strong) padding-box;
     border: 3px solid transparent;
-    border-radius: 999px;
+    border-radius: var(--mr-radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(1 0 0 / 0.28);
 }
 
 /* Buttons: one flat primary color on both Store and Community */
@@ -59,61 +69,86 @@ body,
 .btn_blue_steamui,
 .btn_green_white_innerfade,
 .btnv6_blue_hoverfade {
-    border-radius: var(--mr-r-sm) !important;
+    border-radius: var(--mr-radius-lg) !important;
+    box-shadow: var(--mr-shadow-xs);
     overflow: hidden;
+    transition: filter var(--mr-ease);
 }
 
-.btn_green_steamui>span,
-.btn_blue_steamui>span,
-.btn_green_white_innerfade>span {
+.btn_green_steamui > span,
+.btn_blue_steamui > span,
+.btn_green_white_innerfade > span {
     background: var(--mr-a) !important;
     color: var(--mr-on-a) !important;
     font-weight: 600;
+    box-shadow: inset 0 1px 0 0 oklch(1 0 0 / 0.25);
 }
 
-.btnv6_blue_hoverfade>span {
+.btn_green_steamui:hover,
+.btn_blue_steamui:hover,
+.btn_green_white_innerfade:hover {
+    filter: brightness(1.1);
+}
+
+/* Secondary buttons: raised grey */
+.btnv6_blue_hoverfade > span {
     background: var(--mr-raised) !important;
     color: var(--mr-text) !important;
+    font-weight: 500;
+    box-shadow: var(--mr-highlight);
+}
+
+.btnv6_blue_hoverfade:hover > span {
+    background: var(--mr-raised-hover) !important;
 }
 
 /* ========== 2. Store ========== */
 
 #store_nav_area .store_nav_bg {
     background: var(--mr-surface) !important;
-    border-radius: var(--mr-r-sm);
-    box-shadow: none !important;
+    border-radius: var(--mr-radius-lg);
+    box-shadow: inset 0 0 0 1px var(--mr-line) !important;
 }
 
-/* Prices: final price reads first, discount stays obvious */
+/* Prices: the discount is a tinted badge, the final price reads first */
 .discount_block {
-    border-radius: var(--mr-r-sm);
+    border-radius: var(--mr-radius-md);
     overflow: hidden;
 }
 
 .discount_pct {
-    background: var(--mr-ok) !important;
-    color: var(--mr-on-a) !important;
-    font-weight: 700;
+    border-radius: var(--mr-radius-md);
+    background: var(--mr-ok-soft) !important;
+    box-shadow: inset 0 0 0 1px var(--mr-ok-ring);
+    color: var(--mr-ok) !important;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
 }
 
 .discount_prices {
     background: var(--mr-raised) !important;
 }
 
+.discount_block.discount_block_inline .discount_prices {
+    background: transparent !important;
+}
+
 .discount_original_price {
-    color: var(--mr-muted) !important;
+    color: var(--mr-subtle) !important;
 }
 
 .discount_final_price {
     color: var(--mr-text) !important;
     font-weight: 600;
+    font-variant-numeric: tabular-nums;
 }
 
 /* Buy box */
 .game_area_purchase_game {
     background: var(--mr-surface) !important;
     border: 1px solid var(--mr-line);
-    border-radius: var(--mr-r-lg);
+    border-radius: var(--mr-radius-xl);
+    box-shadow: var(--mr-highlight), var(--mr-shadow-xs);
 }
 
 /* Home: flat ground under the sale artwork */
@@ -132,15 +167,15 @@ body,
     font-size: 15px !important;
     font-weight: 600 !important;
     text-transform: none !important;
-    letter-spacing: 0 !important;
+    letter-spacing: -0.01em !important;
 }
 
-/* Featured carousel: one rounded card, image left, details right (mockup: "Paper Lanterns") */
+/* Featured carousel: one rounded card, image left, details right */
 .store_main_capsule {
     border: 1px solid var(--mr-line);
-    border-radius: var(--mr-r-lg);
+    border-radius: var(--mr-radius-xl);
     background: var(--mr-surface) !important;
-    box-shadow: none !important;
+    box-shadow: var(--mr-highlight), var(--mr-shadow-md) !important;
     overflow: hidden;
 }
 
@@ -152,11 +187,12 @@ body,
     color: var(--mr-text) !important;
     font-family: var(--mr-font) !important;
     font-size: 22px !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.025em;
 }
 
 .store_main_capsule .screenshots > div {
-    border-radius: var(--mr-r-sm);
+    border-radius: var(--mr-radius-md);
 }
 
 .store_main_capsule .reason,
@@ -171,32 +207,33 @@ body,
 
 /* Carousel dots and arrows */
 .carousel_container .carousel_thumbs > div {
-    width: 8px !important;
-    height: 8px !important;
-    border-radius: 999px !important;
-    background: var(--mr-line-strong) !important;
-    transition: width 150ms ease, background-color 150ms ease;
+    width: 6px !important;
+    height: 6px !important;
+    border-radius: var(--mr-radius-full) !important;
+    background: var(--mr-zinc-700) !important;
+    transition: width var(--mr-ease), background-color var(--mr-ease);
 }
 
 .carousel_container .carousel_thumbs > div.focus {
-    width: 20px !important;
+    width: 18px !important;
     background: var(--mr-a) !important;
 }
 
 .carousel_container .arrow {
-    border-radius: var(--mr-r-sm);
+    border-radius: var(--mr-radius-lg);
     background: transparent !important;
+    transition: background-color var(--mr-ease);
 }
 
 .carousel_container .arrow:hover {
-    background: var(--mr-surface) !important;
+    background: var(--mr-hover) !important;
 }
 
 /* Capsule grids and rows */
 .store_capsule,
 .tab_item,
 .special_tiles .special {
-    border-radius: var(--mr-r-sm);
+    border-radius: var(--mr-radius-lg);
     overflow: hidden;
 }
 
@@ -204,15 +241,18 @@ body,
     margin-bottom: 4px;
     border: 1px solid var(--mr-line);
     background: var(--mr-surface) !important;
+    transition: background-color var(--mr-ease), border-color var(--mr-ease);
 }
 
 .tab_item:hover,
 .tab_item.focus {
+    border-color: var(--mr-line-strong);
     background: var(--mr-raised) !important;
 }
 
 .tab_item_name {
     color: var(--mr-text) !important;
+    font-weight: 500;
 }
 
 .tab_item_details,
@@ -220,7 +260,7 @@ body,
     color: var(--mr-muted) !important;
 }
 
-/* "New & Trending / Top Sellers / Upcoming" tabs: underlined text tabs (mockup: "For you · Deals") */
+/* "New & Trending / Top Sellers / Upcoming" tabs: underlined text tabs */
 .home_tabs_row .home_tab {
     background: transparent !important;
 }
@@ -228,8 +268,10 @@ body,
 .home_tabs_row .home_tab .tab_content {
     background: transparent !important;
     color: var(--mr-muted) !important;
+    font-weight: 500;
     text-transform: none !important;
     letter-spacing: 0 !important;
+    transition: color var(--mr-ease);
 }
 
 .home_tabs_row .home_tab:hover .tab_content {
@@ -245,25 +287,40 @@ body,
     border-bottom: 1px solid var(--mr-line);
 }
 
-/* Discount badge reads like the mockup's green chip */
-.discount_pct {
-    border-radius: 6px;
+/* "Discounts & Events" and the other sliding shelves: a card instead of a navy gradient */
+.carousel__slider.carousel__slider--horizontal {
+    border-radius: var(--mr-radius-xl);
+    background: var(--mr-surface) !important;
+    box-shadow: inset 0 0 0 1px var(--mr-line);
 }
 
-.discount_block.discount_block_inline .discount_prices {
-    background: transparent !important;
+/* "Browse by tag" tiles */
+.deep_dive_key_tags {
+    border-radius: var(--mr-radius-lg);
+    background: var(--mr-surface) !important;
+    box-shadow: inset 0 0 0 1px var(--mr-line);
+}
+
+/* Soft shadow band behind the tabbed lists */
+.home_tab_bg_ctn {
+    background: none !important;
+}
+
+#footer {
+    background: var(--mr-rail) !important;
 }
 
 /* Gift card shortcut */
 .home_gift_card_link {
-    border-radius: var(--mr-r-sm);
+    border-radius: var(--mr-radius-lg);
 }
 
 /* Game page header and review summary */
 .apphub_AppName {
     color: var(--mr-text) !important;
     font-family: var(--mr-font) !important;
-    font-weight: 700;
+    font-weight: 600;
+    letter-spacing: -0.025em;
 }
 
 .glance_ctn .user_reviews .summary,
@@ -271,11 +328,18 @@ body,
     color: var(--mr-muted) !important;
 }
 
+/* Tags: small outlined badges */
 .app_tag {
-    border-radius: 999px !important;
-    background: var(--mr-raised) !important;
+    border-radius: var(--mr-radius-md) !important;
+    background: var(--mr-hover) !important;
+    box-shadow: inset 0 0 0 1px var(--mr-line) !important;
+    color: var(--mr-zinc-300) !important;
+    transition: background-color var(--mr-ease), color var(--mr-ease);
+}
+
+.app_tag:hover {
+    background: var(--mr-active) !important;
     color: var(--mr-text) !important;
-    box-shadow: none !important;
 }
 
 /* ========== 3. Community ========== */
@@ -288,7 +352,25 @@ body,
 .responsive_page_template_content textarea,
 .responsive_page_template_content input[type="text"] {
     border: 1px solid var(--mr-line-strong) !important;
-    border-radius: var(--mr-r-sm) !important;
-    background: var(--mr-surface) !important;
+    border-radius: var(--mr-radius-lg) !important;
+    background: var(--mr-input) !important;
     color: var(--mr-text) !important;
+    transition: border-color var(--mr-ease), box-shadow var(--mr-ease);
+}
+
+.responsive_page_template_content textarea:focus,
+.responsive_page_template_content input[type="text"]:focus {
+    border-color: var(--mr-a) !important;
+    box-shadow: 0 0 0 3px var(--mr-a-ring) !important;
+    outline: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+    }
 }

@@ -1,1 +1,2 @@
-:root { --mr-accent: #F2A65A; }
+/* Tailwind amber-400 */
+:root { --mr-accent: oklch(0.828 0.189 84.429); }

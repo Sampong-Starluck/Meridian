@@ -2,23 +2,26 @@
 
 A calm, modern dark theme for the Steam desktop client, made for [Millennium](https://github.com/SteamClientHomebrew/Millennium).
 
-It uses flat surfaces, one accent color and a clearer layout throughout Steam. Store, Library and Community move into a left sidebar, game pages are built from cards, and the menus and dropdowns are rounded to match.
+It makes Steam look and behave like a modern web app: neutral dark surfaces, hairline borders, one accent color and a clearer layout. Store, Library and Community move into a left sidebar, the page sits beside it as an inset panel, game pages are built from cards, and the menus and dropdowns match.
 
 ## Design
 
-The theme follows the [Meridian design mockup](https://claude.ai/artifact/8TiVdmBUq3HVG4pC4rLeNs), which has screens for the Library, Game page, Store, Downloads and Friends window. Colors, spacing and corner radii in the stylesheets come from it.
+The layout follows the [Meridian design mockup](https://claude.ai/artifact/8TiVdmBUq3HVG4pC4rLeNs), which has screens for the Library, Game page, Store, Downloads and Friends window.
+
+The look comes from [Tailwind CSS v4](https://tailwindcss.com)'s default theme: its zinc greys and 400-step accent colors in OKLCH, its corner radius scale, translucent white borders, soft focus rings, and Geist with Geist Mono for type. Tailwind itself is not used or needed. Steam's markup can't take utility classes, so the theme keeps those values as CSS variables in `tokens.css`.
 
 ## What it covers
 
 | Area | What changes |
 | --- | --- |
-| **Window** | Left sidebar with your avatar and profile at the top, then Library, Store, Community and Downloads. Downloads shows how many games are queued and lights up while you are on the Downloads page. Add a Game, Friends & Chat and the download progress card sit at the bottom of the sidebar. Taller title bar with outlined buttons. |
-| **Library** | A "Library" heading with your game and install counts. Press **Ctrl+K** anywhere in the main window to jump to library search. Flat game list with a clear selected row. Covers have an accent ring on hover, recent games are cards with a Play button, and What's New items are cards. |
-| **Game page** | The full banner art in a rounded card, a Play bar card, Store Page / Community Hub / Guides as a tab row, and each section as a card. News posts in the activity feed and the opened post are cards too. |
-| **Downloads** | A "Downloads" heading with a queue summary, the speed graph in a card, sentence-case section titles, and each queued game as a card with outlined buttons. |
-| **Menus and dropdowns** | Rounded dark panels for the Steam/View/Games menus, right-click menus, Sort By and Settings pickers. |
+| **Window** | Left sidebar on the same dark ground as the title bar, with the page as an inset panel beside it. Your avatar and profile sit at the top with Back and Forward next to them, then Library, Store, Community and Downloads. Downloads shows how many games are queued and lights up while you are on the Downloads page. Add a Game, Friends & Chat and the download progress card sit at the bottom of the sidebar. |
+| **Library** | A "Library" heading with badges for your game and install counts. Press **Ctrl+K** anywhere in the main window to jump to library search. Flat game list with a clear selected row. Covers have an accent ring on hover and a matching preview card, recent games are cards with a Play button, and What's New items are cards. |
+| **Game page** | The full banner art in a rounded card, a Play bar card that turns into a frosted header as you scroll, Store Page / Community Hub / Guides as a tab row, and each section as a card. News posts in the activity feed and the opened post are cards too. |
+| **Downloads** | A "Downloads" heading with badges for the queue, the speed graph in a card, sentence-case section titles, and each queued game as a card with outlined buttons. |
+| **Menus and dropdowns** | Compact rounded panels for the Steam/View/Games menus, right-click menus, Sort By and Settings pickers. They ease in when they open. |
+| **Dialogs and buttons** | The main action in a dialog is the one filled accent button, everything else is grey. Text fields show a soft accent halo when focused. |
 | **Friends and chat** | Flat friends list, profile header, search box and rounded group rows. |
-| **Store and Community** | Flat background, a rounded featured carousel, underlined tabs, and discount and price styling. |
+| **Store and Community** | Flat background, a rounded featured carousel, underlined tabs, discounts as green badges and tags as outlined badges. |
 | **Big Picture** | Steam's grey and accent colors remapped to the theme's, with flat accent Play buttons. |
 
 ## Requirements
@@ -45,7 +48,7 @@ Change these in Millennium's theme settings for Meridian.
 | Option | Choices | Default |
 | --- | --- | --- |
 | **Navigation** | **Left rail**: the sidebar layout.<br>**Top tabs**: Steam's usual tabs, with their hover menus. | Left rail |
-| **Accent color** | Blue `#6EA8FE`, Mint `#7DD3A7`, Amber `#F2A65A`, Violet `#C4A1FF` | Blue |
+| **Accent color** | Blue (Tailwind `blue-400`), Mint (`emerald-400`), Amber (`amber-400`), Violet (`violet-400`) | Blue |
 
 The accent color is used for Play buttons, progress bars, focus rings and highlights.
 
@@ -53,6 +56,7 @@ The accent color is used for Play buttons, progress bars, focus rings and highli
 
 | File | Styles |
 | --- | --- |
+| `tokens.css` | Every color, corner radius, shadow and font, as CSS variables. All the stylesheets below import it |
 | `libraryroot.custom.css` | The main window, library, game pages, menus, dialogs and notifications |
 | `layouts/rail.css` | The left sidebar layout (only when **Navigation** is **Left rail**) |
 | `libraryroot.custom.js` | Adds the Library and Downloads headings, your avatar and the Downloads item in the sidebar, and the Ctrl+K search shortcut. In the sidebar layout, stops Store / Library / Community opening a menu on hover |
@@ -61,7 +65,7 @@ The accent color is used for Play buttons, progress bars, focus rings and highli
 | `bigpicture.custom.css` | Big Picture mode, Quick Access and the Steam menu |
 | `accents/*.css` | One file per accent color |
 
-All colors, corner radii and the font are variables at the top of each stylesheet, in `:root`.
+To change the look, edit `tokens.css`. Each variable has a comment naming the Tailwind utility it stands in for, for example `--mr-radius-lg` is `rounded-lg` and `--mr-line` is `border-white/10`.
 
 ## Notes
 
@@ -72,7 +76,7 @@ All colors, corner radii and the font are variables at the top of each styleshee
 ## Limitations
 
 - **JavaScript must be on.** The Library and Downloads headings, your avatar in the sidebar, the sidebar's Downloads item and Ctrl+K come from `libraryroot.custom.js`. With JavaScript turned off in Millennium, the theme still styles everything else.
-- **English only.** The text the theme adds ("Library", "Downloads", "16 games · 6 installed", "2 in queue", "Ctrl K") is in English whatever language Steam uses.
+- **English only.** The text the theme adds ("Library", "Downloads", "16 games", "6 installed", "2 in queue", "Ctrl K") is in English whatever language Steam uses.
 - **Steam internals.** Game counts, the download badge and the Downloads highlight read Steam's internal stores (`collectionStore`, `downloadsStore`, `SteamUIStore`). If a Steam update renames them, those pieces disappear without an error, and the rest of the theme keeps working.
 - **Ctrl+K needs the main window focused.** It doesn't work while you're clicked into a Store or Community page, because those pages are separate web views.
 - **Badge delay.** The Downloads badge refreshes every 2 seconds, so it can lag slightly behind Steam.

@@ -1,36 +1,10 @@
 /* Meridian · Steam client (library, menus, dialogs)
-   Every color, radius and font lives in :root. Change it once, it changes everywhere.
+   Colors, radii, shadows and fonts come from tokens.css. Change them there once
+   and they change everywhere.
    Class names here are the readable ones from Steam (e.g. TopBar), not the
    scrambled _3Z7VQ... ones, so they survive most Steam updates. */
 
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap");
-
-:root {
-    /* Surfaces, darkest to lightest */
-    --mr-rail: #0A0D12;
-    --mr-bg: #0E1116;
-    --mr-surface: #161B22;
-    --mr-raised: #1A212C;
-    --mr-line: #1F2732;
-    --mr-line-strong: #2A3340;
-
-    /* Text and status */
-    --mr-text: #E8ECF1;
-    --mr-muted: #9AA4B2;
-    --mr-ok: #7DD3A7;
-    --mr-danger: #C93C3C;
-
-    /* Accent: set by accents/*.css, falls back to blue */
-    --mr-a: var(--mr-accent, #6EA8FE);
-    --mr-on-a: #0A0D12;
-
-    --mr-r-xs: 8px;
-    --mr-r-sm: 10px;
-    --mr-r-md: 12px;
-    --mr-r-lg: 16px;
-    --mr-font: "Geist", system-ui, "Segoe UI", sans-serif;
-    --mr-ease: 150ms ease;
-}
+@import url("tokens.css");
 
 /* ========== 1. Global ========== */
 
@@ -65,33 +39,65 @@ body {
 ::-webkit-scrollbar-thumb {
     background: var(--mr-line-strong) padding-box;
     border: 3px solid transparent;
-    border-radius: 999px;
+    border-radius: var(--mr-radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--mr-muted);
+    background-color: oklch(1 0 0 / 0.28);
 }
 
+/* Buttons. Secondary by default: a raised grey with a one-pixel top highlight. */
 .DialogButton {
-    border-radius: var(--mr-r-sm) !important;
+    border-radius: var(--mr-radius-lg) !important;
     background: var(--mr-raised) !important;
     color: var(--mr-text) !important;
-    box-shadow: none !important;
-    transition: background-color var(--mr-ease);
+    font-weight: 500;
+    box-shadow: var(--mr-highlight), var(--mr-shadow-xs) !important;
+    transition: background-color var(--mr-ease), filter var(--mr-ease);
 }
 
 .DialogButton:hover {
-    background: var(--mr-line-strong) !important;
+    background: var(--mr-raised-hover) !important;
 }
 
+/* The main action in a dialog ("OK", "Save", "Install") is the only filled accent button */
+.DialogButton.Primary {
+    background: var(--mr-a) !important;
+    color: var(--mr-on-a) !important;
+    font-weight: 600;
+    box-shadow: inset 0 1px 0 0 oklch(1 0 0 / 0.25), var(--mr-shadow-xs) !important;
+}
+
+.DialogButton.Primary:hover {
+    background: var(--mr-a) !important;
+    filter: brightness(1.1);
+}
+
+.DialogButton:disabled,
+.DialogButton.Disabled {
+    opacity: 0.5;
+    filter: none;
+}
+
+/* Text fields: a faint fill, a hairline, and a soft accent halo on focus */
 .DialogInput,
 textarea,
 input[type="text"],
 input[type="search"] {
     border: 1px solid var(--mr-line-strong) !important;
-    border-radius: var(--mr-r-md) !important;
-    background: var(--mr-surface) !important;
+    border-radius: var(--mr-radius-lg) !important;
+    background: var(--mr-input) !important;
     color: var(--mr-text) !important;
+    transition: border-color var(--mr-ease), box-shadow var(--mr-ease);
+}
+
+.DialogInput::placeholder,
+textarea::placeholder,
+input[type="text"]::placeholder,
+input[type="search"]::placeholder {
+    color: var(--mr-subtle) !important;
+    font-style: normal !important;
+    opacity: 1 !important;
 }
 
 .DialogInput:focus,
@@ -99,6 +105,8 @@ textarea:focus,
 input[type="text"]:focus,
 input[type="search"]:focus {
     border-color: var(--mr-a) !important;
+    box-shadow: 0 0 0 3px var(--mr-a-ring) !important;
+    outline: none !important;
 }
 
 /* Sentence case instead of Steam's ALL CAPS, in one place */
@@ -123,48 +131,229 @@ input[type="search"]:focus {
 
 /* ========== 2. Window chrome ========== */
 
+/* The title bar and the navigation share the darkest ground in both layouts;
+   the page below (or beside) them is the lighter panel. */
 .TopBar,
 .SuperNavBar {
-    background: var(--mr-bg) !important;
+    background: var(--mr-rail) !important;
     box-shadow: none !important;
 }
 
 /* Steam / View / Friends / Games / Help */
 .RootMenuButton {
-    border-radius: var(--mr-r-xs);
+    border-radius: var(--mr-radius-md);
     color: var(--mr-muted) !important;
 }
 
 .RootMenuButton:hover {
-    background: var(--mr-raised) !important;
+    background: var(--mr-hover) !important;
     color: var(--mr-text) !important;
 }
 
-/* Store / Library / Community / profile tabs.
+/* ---- Navigation: Library, Store, Community, Downloads, your profile ----
+   One look for both layouts: an icon and a label in a rounded row, filled in for the
+   page you are on. layouts/rail.css stacks the items in the sidebar, layouts/tabs.css
+   lines them up under the title bar. The sizes that differ between the two are the
+   variables --mr-nav-h, --mr-nav-gap and --mr-nav-avatar, set by the layout file.
    Generic names (MenuButton, Selected) stay scoped under their parent. */
-.SuperNavMenu .MenuButton {
-    color: var(--mr-muted) !important;
-    font-weight: 600;
-    transition: color var(--mr-ease);
+.SuperNav .SuperNavMenu {
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-width: 0;
 }
 
-.SuperNavMenu .MenuButton:hover,
-.SuperNavMenu.Selected .MenuButton {
+.SuperNav .SuperNavMenu .MenuButton {
+    display: flex !important;
+    align-items: center;
+    gap: var(--mr-nav-gap, 8px);
+    height: var(--mr-nav-h, 32px) !important;
+    margin: 0 !important;
+    padding: 0 10px !important;
+    border-radius: var(--mr-radius-lg);
+    box-sizing: border-box;
+    color: var(--mr-muted) !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    line-height: var(--mr-nav-h, 32px) !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color var(--mr-ease), color var(--mr-ease);
+}
+
+.SuperNav .SuperNavMenu .MenuButton:hover {
+    background: var(--mr-hover) !important;
     color: var(--mr-text) !important;
 }
 
-/* Steam draws the selected underline with ::after; recolor it instead of adding a second one */
-.SuperNavMenu.Selected .MenuButton::after {
-    background: var(--mr-a) !important;
+.SuperNav .SuperNavMenu.Selected .MenuButton {
+    background: var(--mr-active) !important;
+    color: var(--mr-text) !important;
 }
 
-/* Back / forward arrows */
+/* Steam underlines the selected item with ::after; the filled row replaces it */
+.SuperNav .SuperNavMenu .MenuButton::after {
+    display: none !important;
+}
+
+/* The profile item holds the name in a span; keep it on one line */
+.SuperNav .SuperNavMenu .MenuButton > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Icons, drawn with masks so they take the text color */
+.SuperNav .SuperNavMenu .MenuButton::before,
+.SuperNav .mr-rail-item::before {
+    content: "";
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    background: currentColor;
+    -webkit-mask: var(--mr-icon) center / contain no-repeat;
+    transition: background-color var(--mr-ease);
+}
+
+/* The page you are on: its icon takes the accent */
+.SuperNav .SuperNavMenu.Selected .MenuButton::before {
+    background: var(--mr-a);
+}
+
+/* Steam's order in the page is Store, Library, Community, profile; the layout files
+   only move the items on screen, so these positions hold in both. */
+
+/* Store */
+.SuperNav .SuperNavMenu:nth-child(1 of .SuperNavMenu) .MenuButton {
+    --mr-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M5 8h14l-1 12H6z'/%3E%3Cpath d='M9 8V6a3 3 0 0 1 6 0v2'/%3E%3C/svg%3E");
+}
+
+/* Library */
+.SuperNav .SuperNavMenu:nth-child(2 of .SuperNavMenu) .MenuButton {
+    --mr-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='4' y='4' width='7' height='7' rx='1.5'/%3E%3Crect x='13' y='4' width='7' height='7' rx='1.5'/%3E%3Crect x='4' y='13' width='7' height='7' rx='1.5'/%3E%3Crect x='13' y='13' width='7' height='7' rx='1.5'/%3E%3C/svg%3E");
+}
+
+/* Community */
+.SuperNav .SuperNavMenu:nth-child(3 of .SuperNavMenu) .MenuButton {
+    --mr-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='9' cy='9' r='3.5'/%3E%3Cpath d='M3 19c0-3 2.7-5 6-5s6 2 6 5'/%3E%3Cpath d='M16 5.5a3.5 3.5 0 0 1 0 7M18 14c2 .6 3 2.3 3 5'/%3E%3C/svg%3E");
+}
+
+/* Anything after the profile: Steam adds "Console" in dev mode, a terminal prompt */
+.SuperNav .SuperNavMenu:nth-child(n+5 of .SuperNavMenu) .MenuButton {
+    --mr-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='2.5'/%3E%3Cpath d='m7 9 3 3-3 3M12 15h5'/%3E%3C/svg%3E");
+}
+
+/* Profile: a tinted tile with a person glyph until the real avatar is known */
+.SuperNav .SuperNavMenu:nth-child(4 of .SuperNavMenu) .MenuButton::before {
+    flex-basis: var(--mr-nav-avatar, 20px);
+    width: var(--mr-nav-avatar, 20px);
+    height: var(--mr-nav-avatar, 20px);
+    border-radius: var(--mr-radius-md);
+    background: var(--mr-a) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2309090B' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 20c0-4 3.6-6 8-6s8 2 8 6'/%3E%3C/svg%3E") center / 58% no-repeat;
+    box-shadow: 0 0 0 1px var(--mr-line-strong);
+    -webkit-mask: none;
+}
+
+/* Your real avatar once libraryroot.custom.js has found it */
+:root[data-mr-avatar] .SuperNav .SuperNavMenu:nth-child(4 of .SuperNavMenu) .MenuButton::before {
+    background: var(--mr-avatar) center / cover no-repeat;
+}
+
+/* Downloads item, added by libraryroot.custom.js. Same row as Steam's own items. */
+.SuperNav .mr-rail-item {
+    --mr-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12'/%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3Cpath d='M4 20h16'/%3E%3C/svg%3E");
+    display: flex;
+    align-items: center;
+    gap: var(--mr-nav-gap, 8px);
+    height: var(--mr-nav-h, 32px);
+    padding: 0 10px;
+    border-radius: var(--mr-radius-lg);
+    box-sizing: border-box;
+    color: var(--mr-muted);
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color var(--mr-ease), color var(--mr-ease);
+}
+
+.SuperNav .mr-rail-item:hover {
+    background: var(--mr-hover);
+    color: var(--mr-text);
+}
+
+.SuperNav .mr-rail-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Queue count badge */
+.SuperNav .mr-rail-badge {
+    padding: 0 6px;
+    border-radius: var(--mr-radius-md);
+    background: var(--mr-active);
+    color: var(--mr-text);
+    font: 500 11px/20px var(--mr-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+.SuperNav .mr-rail-badge:empty {
+    display: none;
+}
+
+/* Something is downloading right now */
+.SuperNav .mr-rail-item.mr-active .mr-rail-badge {
+    background: var(--mr-a-soft);
+    box-shadow: inset 0 0 0 1px var(--mr-a-ring);
+    color: var(--mr-a);
+}
+
+/* On the Downloads page Steam still marks Library as selected; move the highlight */
+:root[data-mr-route="downloads"] .SuperNav .SuperNavMenu.Selected .MenuButton {
+    background: transparent !important;
+    color: var(--mr-muted) !important;
+}
+
+:root[data-mr-route="downloads"] .SuperNav .SuperNavMenu.Selected .MenuButton::before {
+    background: currentColor;
+}
+
+:root[data-mr-route="downloads"] .SuperNav .SuperNavMenu.Selected .MenuButton:hover {
+    background: var(--mr-hover) !important;
+    color: var(--mr-text) !important;
+}
+
+:root[data-mr-route="downloads"] .SuperNav .mr-rail-item {
+    background: var(--mr-active);
+    color: var(--mr-text);
+}
+
+:root[data-mr-route="downloads"] .SuperNav .mr-rail-item::before {
+    background: var(--mr-a);
+}
+
+/* Back / forward: small icon buttons */
 .SuperNav .Arrow {
+    box-sizing: content-box;
+    width: 16px !important;
+    height: 16px !important;
+    margin: 0 !important;
+    padding: 6px !important;
+    border-radius: var(--mr-radius-md);
     color: var(--mr-muted) !important;
+    transition: background-color var(--mr-ease), color var(--mr-ease);
 }
 
-.SuperNav .Arrow:hover {
+.SuperNav .Arrow.Enabled:hover {
+    background: var(--mr-hover);
     color: var(--mr-text) !important;
+}
+
+.SuperNav .Arrow.Disabled {
+    opacity: 0.35;
 }
 
 /* Taller title bar so the outlined buttons sit inside it with room above and below,
@@ -206,14 +395,14 @@ input[type="search"]:focus {
 /* Announcements, notifications, Big Picture: outlined square buttons (mockup: bell, gear) */
 .TitleBarControls .Button {
     border: 1px solid var(--mr-line-strong);
-    border-radius: var(--mr-r-xs) !important;
+    border-radius: var(--mr-radius-md) !important;
     background: transparent !important;
     color: var(--mr-muted);
     transition: background-color var(--mr-ease), color var(--mr-ease);
 }
 
 .TitleBarControls .Button:hover {
-    background: var(--mr-raised) !important;
+    background: var(--mr-hover) !important;
     color: var(--mr-text);
 }
 
@@ -224,22 +413,23 @@ input[type="search"]:focus {
     color: var(--mr-on-a);
 }
 
-/* Avatar, name and wallet as one pill */
+/* Avatar, name and wallet as one button, the same shape as its neighbours */
 .TitleBarControls .AccountMenu {
     border: 1px solid var(--mr-line-strong);
-    border-radius: 999px !important;
+    border-radius: var(--mr-radius-md) !important;
     background: transparent !important;
     color: var(--mr-text);
     overflow: hidden;
+    transition: background-color var(--mr-ease);
 }
 
 .TitleBarControls .AccountMenu:hover {
-    background: var(--mr-raised) !important;
+    background: var(--mr-hover) !important;
 }
 
 .TitleBarControls .AccountMenu .avatarHolder,
 .TitleBarControls .AccountMenu img.avatar {
-    border-radius: 999px !important;
+    border-radius: var(--mr-radius-full) !important;
 }
 
 /* Steam's blue-to-teal glow behind the window buttons (top-right corner) */
@@ -249,13 +439,13 @@ input[type="search"]:focus {
 
 /* Minimize, maximize, close */
 .windowControlButton {
-    border-radius: var(--mr-r-xs);
+    border-radius: var(--mr-radius-md);
     color: var(--mr-muted);
     transition: background-color var(--mr-ease);
 }
 
 .windowControlButton:hover {
-    background: var(--mr-raised) !important;
+    background: var(--mr-active) !important;
     color: var(--mr-text);
 }
 
@@ -271,36 +461,46 @@ input[type="search"]:focus {
     background: var(--mr-bg) !important;
 }
 
+/* Steam keeps an empty 12px strip where the address bar would be on Library pages.
+   It only adds a gap between the title bar and the page, so drop it. */
+.URLBarReplacement {
+    display: none !important;
+}
+
 /* "Scroll To Top" pill at the bottom of long pages (Steam: blue gradient) */
 .ScrollToTopButton > div {
     border: 1px solid var(--mr-line-strong);
-    border-radius: 999px;
+    border-radius: var(--mr-radius-full);
     background: var(--mr-raised) !important;
     color: var(--mr-text) !important;
-    box-shadow: 0 6px 16px rgb(0 0 0 / 0.4);
+    box-shadow: var(--mr-shadow-lg);
 }
 
-/* Address bar on Store and Community pages */
+/* Address bar on Store and Community pages: reads like a browser's, URL in monospace */
 .URLBar {
-    background: var(--mr-rail) !important;
+    background: var(--mr-bg) !important;
     border-bottom: 1px solid var(--mr-line);
 }
 
 .URLBarText {
-    border-radius: var(--mr-r-sm) !important;
-    background: var(--mr-surface) !important;
+    border-radius: var(--mr-radius-md) !important;
+    background: var(--mr-input) !important;
+    box-shadow: inset 0 0 0 1px var(--mr-line);
 }
 
 .URLBarText .URL {
     color: var(--mr-muted) !important;
+    font-family: var(--mr-mono) !important;
+    font-size: 12px !important;
+    letter-spacing: 0 !important;
 }
 
 .URLBar .ReloadButton {
-    border-radius: var(--mr-r-xs);
+    border-radius: var(--mr-radius-md);
 }
 
 .URLBar .ReloadButton:hover {
-    background: var(--mr-raised) !important;
+    background: var(--mr-hover) !important;
 }
 
 /* ========== 4. Bottom bar and alerts ========== */
@@ -330,7 +530,7 @@ input[type="search"]:focus {
 .ActionAlert {
     margin: 8px;
     border: 1px solid var(--mr-line-strong) !important;
-    border-radius: var(--mr-r-md) !important;
+    border-radius: var(--mr-radius-xl) !important;
     background: var(--mr-surface) !important;
 }
 
@@ -348,9 +548,16 @@ input[type="search"]:focus {
 }
 
 .ActionAlert .AlertButton {
-    border-radius: var(--mr-r-sm) !important;
+    border-radius: var(--mr-radius-lg) !important;
     background: var(--mr-raised) !important;
     color: var(--mr-text) !important;
+    font-weight: 500;
+    box-shadow: var(--mr-highlight), var(--mr-shadow-xs);
+    transition: background-color var(--mr-ease), filter var(--mr-ease);
+}
+
+.ActionAlert .AlertButton:hover {
+    background: var(--mr-raised-hover) !important;
 }
 
 /* With two or more buttons, the first is the main action ("Restart Steam").
@@ -358,6 +565,13 @@ input[type="search"]:focus {
 .ActionAlert .AlertButton:first-child:not(:last-child) {
     background: var(--mr-a) !important;
     color: var(--mr-on-a) !important;
+    font-weight: 600;
+    box-shadow: inset 0 1px 0 0 oklch(1 0 0 / 0.25), var(--mr-shadow-xs);
+}
+
+.ActionAlert .AlertButton:first-child:not(:last-child):hover {
+    background: var(--mr-a) !important;
+    filter: brightness(1.1);
 }
 
 /* ========== 5. Menus ==========
@@ -373,11 +587,29 @@ input[type="search"]:focus {
    With content-box the padding and border would push the right edge out of the window. */
 .contextMenu {
     box-sizing: border-box;
-    padding: 6px !important;
+    padding: 4px !important;
     border: 1px solid var(--mr-line-strong) !important;
-    border-radius: var(--mr-r-md) !important;
+    border-radius: var(--mr-radius-xl) !important;
     background: var(--mr-surface) !important;
-    box-shadow: 0 12px 32px rgb(0 0 0 / 0.45) !important;
+    box-shadow: var(--mr-shadow-lg) !important;
+    animation: mr-pop 120ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Steam focuses the menu panel itself when it opens. The global focus ring would sit
+   2px outside the panel, where the window clips it down to four accent-colored corners. */
+.contextMenu:focus,
+.contextMenu:focus-visible,
+.DialogDropDownMenu:focus,
+.DialogDropDownMenu:focus-visible {
+    outline: none !important;
+}
+
+/* Menus ease in instead of snapping open */
+@keyframes mr-pop {
+    from {
+        opacity: 0;
+        transform: translateY(-3px) scale(0.98);
+    }
 }
 
 /* Steam paints its own grey panel (plus a gradient and border on the bell menu)
@@ -385,7 +617,7 @@ input[type="search"]:focus {
 .contextMenu .contextMenuContents {
     padding: 0 !important;
     border: 0 !important;
-    border-radius: var(--mr-r-xs) !important;
+    border-radius: var(--mr-radius-md) !important;
     background: transparent !important;
     box-shadow: none !important;
 }
@@ -394,22 +626,24 @@ input[type="search"]:focus {
 .contextMenu .contextMenuItem {
     display: flex;
     align-items: center;
-    min-height: 40px;
-    padding: 0 12px !important;
-    border-radius: var(--mr-r-xs);
+    min-height: 32px;
+    padding: 0 10px !important;
+    border-radius: var(--mr-radius-lg);
     color: var(--mr-text) !important;
+    font-size: 13px;
     font-weight: 500;
+    transition: background-color 80ms linear;
 }
 
 .contextMenu .contextMenuItem:hover,
 .contextMenu .contextMenuItem:focus {
-    background: var(--mr-raised) !important;
+    background: var(--mr-hover) !important;
 }
 
 /* Divider lines (<hr class="... MenuItem Separator">) */
 .contextMenu .Separator {
     height: 1px !important;
-    margin: 6px 4px !important;
+    margin: 4px 0 !important;
     border: 0 !important;
     background: var(--mr-line) !important;
 }
@@ -418,13 +652,15 @@ input[type="search"]:focus {
    blocks, which show as a lighter rectangle inside the rounded button. */
 .DialogDropDown {
     border: 1px solid var(--mr-line-strong) !important;
-    border-radius: var(--mr-r-xs) !important;
-    background: var(--mr-surface) !important;
+    border-radius: var(--mr-radius-lg) !important;
+    background: var(--mr-input) !important;
     box-shadow: none !important;
+    transition: border-color var(--mr-ease), background-color var(--mr-ease);
 }
 
 .DialogDropDown:hover {
-    border-color: var(--mr-a) !important;
+    border-color: oklch(1 0 0 / 0.24) !important;
+    background: var(--mr-hover) !important;
 }
 
 .DialogDropDown .DialogDropDown_CurrentDisplay,
@@ -439,16 +675,17 @@ input[type="search"]:focus {
    so the panel rule needs that scope to win. */
 .DialogDropDownMenu,
 .DesktopUI .DialogMenuPosition > div.DialogDropDownMenu {
-    padding: 6px !important;
+    padding: 4px !important;
     border: 1px solid var(--mr-line-strong) !important;
-    border-radius: var(--mr-r-md) !important;
+    border-radius: var(--mr-radius-xl) !important;
     background: var(--mr-surface) !important;
-    box-shadow: 0 12px 32px rgb(0 0 0 / 0.45) !important;
+    box-shadow: var(--mr-shadow-lg) !important;
+    animation: mr-pop 120ms cubic-bezier(0, 0, 0.2, 1);
 }
 
 .DialogDropDownMenu .DialogDropDownMenu_Item {
-    min-height: 34px;
-    border-radius: var(--mr-r-xs) !important;
+    min-height: 32px;
+    border-radius: var(--mr-radius-lg) !important;
     background: transparent !important;
     color: var(--mr-text) !important;
     font-size: 13px !important;
@@ -459,7 +696,7 @@ input[type="search"]:focus {
 .DialogDropDownMenu .DialogDropDownMenu_Item:hover,
 .DialogDropDownMenu .DialogDropDownMenu_Item:focus,
 .DialogDropDownMenu .DialogDropDownMenu_Item.gpfocus {
-    background: var(--mr-raised) !important;
+    background: var(--mr-hover) !important;
     color: var(--mr-text) !important;
     outline: none !important;
 }
@@ -475,22 +712,24 @@ input[type="search"]:focus {
    Settings, Properties and other pop-up dialogs (ModalDialogPopup / FullModalOverlay
    windows) load this file. Dialog* are Steam's readable dialog names; confirm in dev tools. */
 
+/* Scrim: dimmed and softly blurred, so the dialog is clearly the thing in front */
 .ModalOverlayBackground {
-    background: rgb(5 7 10 / 0.7) !important;
+    background: rgb(0 0 0 / 0.6) !important;
+    backdrop-filter: blur(4px);
 }
 
 .DialogContent {
     border: 1px solid var(--mr-line-strong) !important;
-    border-radius: var(--mr-r-md) !important;
+    border-radius: var(--mr-radius-xl) !important;
     background: var(--mr-surface) !important;
-    box-shadow: 0 24px 64px rgb(0 0 0 / 0.5) !important;
+    box-shadow: var(--mr-highlight), var(--mr-shadow-2xl) !important;
 }
 
 .DialogHeader {
     color: var(--mr-text) !important;
     font-weight: 600 !important;
     text-transform: none !important;
-    letter-spacing: 0 !important;
+    letter-spacing: -0.015em !important;
 }
 
 .DialogBody {
@@ -513,9 +752,9 @@ input[type="search"]:focus {
 /* One notification pop-up in the corner of the screen */
 .DesktopToastTemplate {
     border: 1px solid var(--mr-line-strong) !important;
-    border-radius: var(--mr-r-md) !important;
+    border-radius: var(--mr-radius-xl) !important;
     background: var(--mr-surface) !important;
-    box-shadow: 0 12px 32px rgb(0 0 0 / 0.45) !important;
+    box-shadow: var(--mr-highlight), var(--mr-shadow-lg) !important;
     overflow: hidden;
 }
 
@@ -537,22 +776,23 @@ input[type="search"]:focus {
 /* Ctrl+F bar on Store/Community pages */
 .FindBar {
     border: 1px solid var(--mr-line-strong) !important;
-    border-radius: var(--mr-r-sm) !important;
+    border-radius: var(--mr-radius-lg) !important;
     background: var(--mr-surface) !important;
 }
 
 /* ========== 8. Library ========== */
 
-/* Left game list */
+/* Left game list: a second sidebar inside the page panel, set apart by a hairline only */
 .LeftListSizableContainer {
-    background: var(--mr-rail) !important;
+    background: var(--mr-bg) !important;
     border-right: 1px solid var(--mr-line);
 }
 
-/* Steam lays a grey gradient panel over the rail color; the list sits on the rail itself */
+/* Steam lays a grey gradient panel, inset edges and a drop shadow over the list */
 .LeftListSizableContainer > div,
 .LeftListSizableContainer .GameListHomeAndSearch {
     background: transparent !important;
+    box-shadow: none !important;
 }
 
 /* Search box: Steam wraps the input in a translucent grey block */
@@ -562,20 +802,16 @@ input[type="search"]:focus {
 }
 
 .LeftListSizableContainer .SearchInput input {
-    height: 34px;
-    border-radius: var(--mr-r-sm) !important;
+    height: 32px;
+    border-radius: var(--mr-radius-lg) !important;
     /* Room for the magnifier on the left and the Ctrl K hint on the right */
-    padding-left: 34px !important;
-    padding-right: 52px !important;
-    background: var(--mr-surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239AA4B2' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") 11px center / 16px no-repeat !important;
+    padding-left: 32px !important;
+    padding-right: 56px !important;
+    background: var(--mr-input) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A1A1AA' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") 10px center / 15px no-repeat !important;
     border: 1px solid var(--mr-line-strong) !important;
     box-sizing: border-box !important;
     width: 100% !important;
-}
-
-.LeftListSizableContainer .SearchInput input::placeholder {
-    color: var(--mr-muted) !important;
-    opacity: 1 !important;
+    font-size: 13px !important;
 }
 
 /* "Ctrl K" hint, added by libraryroot.custom.js; gone while typing */
@@ -586,15 +822,16 @@ input[type="search"]:focus {
 .LeftListSizableContainer .SearchInput .mr-kbd {
     position: absolute;
     top: 50%;
-    right: 8px;
+    right: 6px;
     transform: translateY(-50%);
     /* Steam's input wrapper is absolutely positioned at z-index 2 */
     z-index: 3;
-    padding: 1px 6px;
+    padding: 0 5px;
     border: 1px solid var(--mr-line-strong);
-    border-radius: 6px;
+    border-radius: var(--mr-radius-sm);
+    background: var(--mr-hover);
     color: var(--mr-muted);
-    font: 500 11px/16px var(--mr-font);
+    font: 500 10px/18px var(--mr-mono);
     pointer-events: none;
 }
 
@@ -603,66 +840,121 @@ input[type="search"]:focus {
     display: none;
 }
 
-/* Downloads item for the left rail (libraryroot.custom.js). Only layouts/rail.css shows it. */
-.mr-rail-item {
-    display: none;
-}
-
 .LibraryWindowDivider {
     background: var(--mr-line) !important;
 }
 
-/* "Home" and the collections button: rail-style items */
+/* "Home" and the collections button: the same rows as the navigation items */
 .GameListHomeAndSearch .Bar {
-    border-radius: var(--mr-r-xs) !important;
+    border-radius: var(--mr-radius-lg) !important;
     background: transparent !important;
     color: var(--mr-muted) !important;
     transition: background-color var(--mr-ease), color var(--mr-ease);
 }
 
 .GameListHomeAndSearch .Bar:hover {
-    background: var(--mr-surface) !important;
+    background: var(--mr-hover) !important;
     color: var(--mr-text) !important;
 }
 
 .GameListHomeAndSearch .Bar.Selected {
-    background: var(--mr-raised) !important;
+    background: var(--mr-active) !important;
     color: var(--mr-text) !important;
+    font-weight: 500;
 }
 
 .GameListHomeAndSearch .Bar .Icon {
     background: transparent !important;
 }
 
-/* "Home" draws a large faded Steam logo behind its label */
+/* "Home" draws a large faded Steam logo behind its label; a small house icon replaces it */
 .GameListHomeAndSearch .HomeBox .Bar .Icon {
     display: none !important;
 }
 
+.GameListHomeAndSearch .HomeBox .Bar {
+    align-items: center;
+    gap: 8px;
+    padding: 0 10px !important;
+    box-sizing: border-box;
+}
+
+.GameListHomeAndSearch .HomeBox .Bar::before {
+    content: "";
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 11.5 12 4l8 7.5'/%3E%3Cpath d='M6 10v10h12V10'/%3E%3Cpath d='M10 20v-5h4v5'/%3E%3C/svg%3E") center / contain no-repeat;
+    transition: background-color var(--mr-ease);
+}
+
+.GameListHomeAndSearch .HomeBox .Bar.Selected::before {
+    background: var(--mr-a);
+}
+
+.GameListHomeAndSearch .HomeBox .Bar .Label {
+    margin: 0 !important;
+    color: inherit !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+}
+
+/* Collections: Steam's four heavy squares become a small 2x2 grid icon in a square button */
+.GameListHomeAndSearch .CollectionButton {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    height: 32px !important;
+}
+
+.GameListHomeAndSearch .CollectionIcon {
+    display: grid !important;
+    grid-template-columns: repeat(2, 6px);
+    gap: 3px;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.GameListHomeAndSearch .CollectionIconBox {
+    width: 6px !important;
+    height: 6px !important;
+    margin: 0 !important;
+    border-radius: 1.5px !important;
+    background: currentColor !important;
+    opacity: 1 !important;
+}
+
+.GameListHomeAndSearch .CollectionButton.Selected .CollectionIconBox {
+    background: var(--mr-a) !important;
+}
+
 /* "Games and Software" view picker */
 .LeftListSizableContainer .SearchBar .MenuHeader {
-    border-radius: var(--mr-r-xs);
+    border-radius: var(--mr-radius-md);
     color: var(--mr-text) !important;
 }
 
 .LeftListSizableContainer .SearchBar .MenuHeader:hover {
-    background: var(--mr-surface) !important;
+    background: var(--mr-hover) !important;
 }
 
 .LeftListSizableContainer .AdvancedSearchButton {
-    border-radius: var(--mr-r-xs);
+    border-radius: var(--mr-radius-md);
 }
 
 .LeftListSizableContainer .AdvancedSearchButton:hover {
-    background: var(--mr-surface) !important;
+    background: var(--mr-hover) !important;
 }
 
-/* Group headers ("Favorites", "Uncategorized"): small muted labels, as in the mockup */
+/* Group headers ("Favorites", "Uncategorized"): small muted labels */
 .LeftListSizableContainer .SectionHeaderContent,
 .LeftListSizableContainer .SectionName {
     color: var(--mr-muted) !important;
     font-size: 12px !important;
-    font-weight: 600;
+    font-weight: 500;
     text-transform: none !important;
     letter-spacing: 0 !important;
 }
@@ -670,16 +962,23 @@ input[type="search"]:focus {
 /* Group header rows: Steam fades a slate band behind them */
 .LeftListSizableContainer .CollapseIconParent {
     background: transparent !important;
-    border-radius: 6px;
+    border-radius: var(--mr-radius-md);
 }
 
 .LeftListSizableContainer .CollapseIconParent:hover {
-    background: var(--mr-surface) !important;
+    background: var(--mr-hover) !important;
 }
 
+/* How many games are in the group: quieter than the group's name */
 .LeftListSizableContainer .SectionCount {
-    color: var(--mr-muted) !important;
-    opacity: 0.7;
+    color: var(--mr-subtle) !important;
+    font-variant-numeric: tabular-nums;
+}
+
+/* The scrolling list itself takes keyboard focus, which drew the focus ring around the
+   whole column. The focused row inside it still shows its own highlight. */
+.LeftListSizableContainer > .Container > .Container:focus-visible {
+    outline: none !important;
 }
 
 .LeftListSizableContainer .SectionRule {
@@ -688,12 +987,12 @@ input[type="search"]:focus {
 
 /* Game rows. Heights stay Steam's: the list is virtualized and positions rows by height. */
 .LeftListSizableContainer .GameListEntryContainer {
-    border-radius: 6px;
-    transition: background-color var(--mr-ease);
+    border-radius: var(--mr-radius-md);
+    transition: background-color 80ms linear;
 }
 
 .LeftListSizableContainer .GameListEntryContainer:hover {
-    background: var(--mr-surface) !important;
+    background: var(--mr-hover) !important;
 }
 
 /* Steam paints the selected row's wrapper blue; the row itself carries the highlight */
@@ -704,7 +1003,7 @@ input[type="search"]:focus {
 .LeftListSizableContainer .Selected > .GameListEntryContainer,
 .LeftListSizableContainer .GameListEntryContainer.Selected {
     position: relative;
-    background: var(--mr-raised) !important;
+    background: var(--mr-active) !important;
     color: var(--mr-text) !important;
 }
 
@@ -729,20 +1028,26 @@ input[type="search"]:focus {
 /* One game cover in the library grid */
 .LibraryItemBox,
 .LibraryItemBox .Capsule {
-    border-radius: var(--mr-r-md) !important;
+    border-radius: var(--mr-radius-lg) !important;
     overflow: hidden;
 }
 
 /* Play / Install button */
 .PlayButtonContainer,
 .PlayButtonContainer .PlayButton {
-    border-radius: var(--mr-r-md) !important;
+    border-radius: var(--mr-radius-lg) !important;
 }
 
 .PlayButtonContainer.Green .PlayButton {
     background: var(--mr-a) !important;
     color: var(--mr-on-a) !important;
     font-weight: 600;
+    box-shadow: inset 0 1px 0 0 oklch(1 0 0 / 0.25) !important;
+    transition: filter var(--mr-ease);
+}
+
+.PlayButtonContainer.Green .PlayButton:hover {
+    filter: brightness(1.1);
 }
 
 .PlayButtonContainer.Green .PlayButton svg {
@@ -803,7 +1108,7 @@ input[type="search"]:focus {
 }
 
 .TopCapsule .HeaderBackgroundImage {
-    clip-path: inset(16px 16px 8px 16px round 16px);
+    clip-path: inset(16px 16px 8px 16px round 12px);
 }
 
 .TopCapsule .HeaderBackgroundImage .ImgContainer {
@@ -824,14 +1129,16 @@ input[type="search"]:focus {
     width: auto !important;
     margin: 0 16px;
     border: 1px solid var(--mr-line);
-    border-radius: var(--mr-r-md);
+    border-radius: var(--mr-radius-xl);
     background: var(--mr-surface) !important;
+    box-shadow: var(--mr-highlight), var(--mr-shadow-xs);
 }
 
-/* The same bar once it sticks to the top while scrolling */
+/* The same bar once it sticks to the top while scrolling: frosted, like a sticky web header */
 .AppDetailsMain > .PlayBar.Container .PlayBar.Glassy {
     border-bottom: 1px solid var(--mr-line);
-    background: var(--mr-rail) !important;
+    background: color-mix(in oklab, var(--mr-bg) 80%, transparent) !important;
+    backdrop-filter: blur(12px);
 }
 
 .PlayBar .PlayBarLabel {
@@ -845,12 +1152,13 @@ input[type="search"]:focus {
     font-weight: 600;
 }
 
-/* "Game" / "Soundtrack" label on the hero: a pill chip, like the mockup's tags */
+/* "Game" / "Soundtrack" label on the hero: a frosted badge */
 .TopCapsule .HeaderFeatures .InCollection {
-    padding: 2px 10px !important;
-    border: 1px solid rgb(255 255 255 / 0.12);
-    border-radius: 999px !important;
-    background: rgb(10 13 18 / 0.6) !important;
+    padding: 2px 8px !important;
+    border: 1px solid oklch(1 0 0 / 0.14);
+    border-radius: var(--mr-radius-md) !important;
+    background: rgb(9 9 11 / 0.6) !important;
+    backdrop-filter: blur(8px);
     color: var(--mr-text) !important;
     font-size: 11px !important;
     font-weight: 500;
@@ -860,14 +1168,14 @@ input[type="search"]:focus {
 .PlayBar .AppButtonsContainer .MenuButton {
     box-sizing: border-box;
     border: 1px solid var(--mr-line-strong) !important;
-    border-radius: var(--mr-r-xs) !important;
+    border-radius: var(--mr-radius-md) !important;
     background: transparent !important;
     color: var(--mr-muted) !important;
     transition: background-color var(--mr-ease), color var(--mr-ease);
 }
 
 .PlayBar .AppButtonsContainer .MenuButton:hover {
-    background: var(--mr-raised) !important;
+    background: var(--mr-hover) !important;
     color: var(--mr-text) !important;
 }
 
@@ -919,12 +1227,12 @@ input[type="search"]:focus {
 .AppGameInfoContainer > .Container {
     box-sizing: border-box;
     border: 1px solid var(--mr-line);
-    border-radius: var(--mr-r-md);
+    border-radius: var(--mr-radius-xl);
     background: var(--mr-surface) !important;
 }
 
 .AppGameInfoContainer .SectionContainer {
-    border-radius: var(--mr-r-xs);
+    border-radius: var(--mr-radius-md);
     background: var(--mr-raised) !important;
 }
 
@@ -941,7 +1249,7 @@ input[type="search"]:focus {
 }
 
 .AppGameInfoContainer .BoxArt {
-    border-radius: var(--mr-r-xs);
+    border-radius: var(--mr-radius-md);
     overflow: hidden;
 }
 
@@ -950,8 +1258,9 @@ input[type="search"]:focus {
 .AppDetailsOverviewPanel .ReviewContainer {
     box-sizing: border-box;
     border: 1px solid var(--mr-line);
-    border-radius: var(--mr-r-md);
+    border-radius: var(--mr-radius-xl);
     background: var(--mr-surface) !important;
+    box-shadow: var(--mr-highlight), var(--mr-shadow-xs);
 }
 
 .AppDetailsOverviewPanel .ColumnContainer .AppDetailsSection {
@@ -965,28 +1274,30 @@ input[type="search"]:focus {
 .AppDetailsOverviewPanel .AppDetailsSection .SectionHeader {
     color: var(--mr-text) !important;
     font-weight: 600 !important;
+    letter-spacing: -0.01em !important;
 }
 
-/* "New Note", "View all my reviews"...: small outlined buttons (mockup: "Verify files", "Move") */
+/* "New Note", "View all my reviews"...: small outlined buttons */
 .AppDetailsOverviewPanel .AppDetailsButton.DialogButton {
     width: auto !important;
     min-width: 0 !important;
-    padding: 5px 12px !important;
+    padding: 5px 10px !important;
     border: 1px solid var(--mr-line-strong) !important;
     line-height: 16px !important;
-    border-radius: var(--mr-r-xs) !important;
-    background: transparent !important;
+    border-radius: var(--mr-radius-md) !important;
+    background: var(--mr-input) !important;
+    box-shadow: var(--mr-shadow-xs) !important;
     font-size: 12px !important;
     font-weight: 500;
 }
 
 .AppDetailsOverviewPanel .AppDetailsButton.DialogButton:hover {
-    background: var(--mr-raised) !important;
+    background: var(--mr-active) !important;
 }
 
 /* Activity feed */
 .AppDetailsOverviewPanel .ViewLastNews {
-    border-radius: 999px;
+    border-radius: var(--mr-radius-full);
     background: var(--mr-raised) !important;
     color: var(--mr-text) !important;
 }
@@ -1008,7 +1319,7 @@ input[type="search"]:focus {
 .AppDetailsOverviewPanel .PartnerEventMediumImage,
 .AppDetailsOverviewPanel .PartnerEventMediumImage_Container {
     background: var(--mr-raised) !important;
-    border-radius: var(--mr-r-md);
+    border-radius: var(--mr-radius-xl);
 }
 
 .AppDetailsOverviewPanel .PartnerEventMediumImage {
@@ -1019,9 +1330,9 @@ input[type="search"]:focus {
 /* A news post opened over the game page */
 .AppPartnerEventsPage .PartnerEvent.InLibraryView {
     border: 1px solid var(--mr-line-strong);
-    border-radius: var(--mr-r-lg) !important;
+    border-radius: var(--mr-radius-xl) !important;
     background: var(--mr-surface) !important;
-    box-shadow: 0 24px 64px rgb(0 0 0 / 0.5) !important;
+    box-shadow: var(--mr-highlight), var(--mr-shadow-2xl) !important;
 }
 
 .AppPartnerEventsPage .EventDetailTitleContainer {
@@ -1035,12 +1346,12 @@ input[type="search"]:focus {
 }
 
 .AppPartnerEventsPage .CloseButton:hover {
-    background: var(--mr-line-strong) !important;
+    background: var(--mr-raised-hover) !important;
 }
 
 /* Community content tiles */
 .AppDetailsOverviewPanel .CommunityItem {
-    border-radius: var(--mr-r-xs);
+    border-radius: var(--mr-radius-md);
     overflow: hidden;
 }
 
@@ -1056,30 +1367,59 @@ input[type="search"]:focus {
     background: var(--mr-bg) !important;
 }
 
-/* Covers: the mockup uses a tighter corner than the cards */
-.LibraryHome .LibraryItemBox,
-.LibraryHome .LibraryItemBox .Capsule {
-    border-radius: var(--mr-r-xs) !important;
-}
-
-/* Flat covers: no glare sweep, an accent ring on hover and focus instead */
+/* Flat covers: no glare sweep. A faint inner edge keeps dark artwork from melting into
+   the page, and hover / focus swap it for a ring in the accent, set off by a gap. */
 .LibraryHome .LibraryItemBoxShine {
     display: none !important;
 }
 
 .LibraryHome .LibraryItemBox {
+    outline: 1px solid oklch(1 0 0 / 0.1);
+    outline-offset: -1px;
     transition: box-shadow var(--mr-ease);
 }
 
 .LibraryHome .Draggable:hover .LibraryItemBox,
 .LibraryHome .Focusable:focus-visible .LibraryItemBox {
-    box-shadow: 0 0 0 2px var(--mr-a) !important;
+    box-shadow: 0 0 0 2px var(--mr-bg), 0 0 0 4px var(--mr-a) !important;
+}
+
+/* Preview card that opens beside a cover on hover: a popover, like the menus.
+   Steam fills it with grey and a blurred copy of the cover. */
+.AppPortraitHover {
+    border-radius: var(--mr-radius-xl);
+    background: var(--mr-surface) !important;
+    box-shadow: 0 0 0 1px var(--mr-line-strong), var(--mr-shadow-lg) !important;
+    overflow: hidden;
+    animation: mr-pop 120ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.AppPortraitHover .CapsuleBackgroundContainer {
+    display: none !important;
+}
+
+.AppPortraitHover .AppTitle {
+    color: var(--mr-text) !important;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.AppPortraitHover .PlaytimeDetails {
+    color: var(--mr-text) !important;
+    font-variant-numeric: tabular-nums;
+}
+
+.AppPortraitHover .PlaytimeDetails .Header {
+    color: var(--mr-muted) !important;
+    font-weight: 500;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
 }
 
 /* "Jump back in" (Recent Games) tiles: a card with a flat footer */
 .LibraryHome .RecentGame .LibraryItemBox {
     border: 1px solid var(--mr-line);
-    border-radius: var(--mr-r-md) !important;
+    border-radius: var(--mr-radius-xl) !important;
     background: var(--mr-surface) !important;
 }
 
@@ -1106,10 +1446,10 @@ input[type="search"]:focus {
 
 /* Round Play / Download button on recent tiles */
 .LibraryHome .LibraryItemActionButton {
-    border-radius: var(--mr-r-md) !important;
+    border-radius: var(--mr-radius-lg) !important;
     background: var(--mr-a) !important;
     color: var(--mr-on-a) !important;
-    box-shadow: 0 6px 16px rgb(0 0 0 / 0.4) !important;
+    box-shadow: inset 0 1px 0 0 oklch(1 0 0 / 0.25), var(--mr-shadow-lg) !important;
 }
 
 .LibraryHome .LibraryItemActionButton svg {
@@ -1139,18 +1479,20 @@ input[type="search"]:focus {
     box-sizing: border-box;
     padding: 10px;
     border: 1px solid var(--mr-line);
-    border-radius: var(--mr-r-md);
+    border-radius: var(--mr-radius-xl);
     background: var(--mr-surface) !important;
-    transition: border-color var(--mr-ease);
+    box-shadow: var(--mr-highlight), var(--mr-shadow-xs);
+    transition: border-color var(--mr-ease), background-color var(--mr-ease);
 }
 
 .UpdatesContainer .PartnerEventRowCapsule:hover {
     border-color: var(--mr-line-strong);
+    background: color-mix(in oklab, var(--mr-surface) 70%, var(--mr-raised)) !important;
 }
 
 /* The image block inside the card */
 .UpdatesContainer .PartnerEventRowCapsule_Container {
-    border-radius: var(--mr-r-xs);
+    border-radius: var(--mr-radius-md);
     overflow: hidden;
 }
 
@@ -1184,16 +1526,18 @@ input[type="search"]:focus {
     color: var(--mr-text);
 }
 
-/* "Add shelf" */
+/* "Add shelf": a dashed outline, the usual shape for "add something here" */
 .LibraryHome .AddShowcase {
-    border: 1px solid var(--mr-line-strong);
-    border-radius: 999px !important;
-    background: var(--mr-surface) !important;
+    border: 1px dashed oklch(1 0 0 / 0.2);
+    border-radius: var(--mr-radius-lg) !important;
+    background: transparent !important;
     color: var(--mr-muted) !important;
+    transition: border-color var(--mr-ease), background-color var(--mr-ease), color var(--mr-ease);
 }
 
 .LibraryHome .AddShowcase:not(.Disabled):hover {
     border-color: var(--mr-a);
+    background: var(--mr-a-soft) !important;
     color: var(--mr-text) !important;
 }
 
@@ -1211,7 +1555,7 @@ input[type="search"]:focus {
 .ShowcaseHeader .CollectionDropDown .DialogDropDown {
     padding: 0 8px 0 2px !important;
     border: 0 !important;
-    border-radius: var(--mr-r-xs) !important;
+    border-radius: var(--mr-radius-md) !important;
     background: transparent !important;
     box-shadow: none !important;
 }
@@ -1221,21 +1565,22 @@ input[type="search"]:focus {
 }
 
 .ShowcaseHeader .CollectionDropDown .DialogDropDown:hover {
-    background: var(--mr-surface) !important;
+    background: var(--mr-hover) !important;
 }
 
-/* Sort menus as pill chips (mockup: "Sort · Recently played") */
+/* Sort menus: compact select boxes */
 .SortingDropDown .DialogDropDown {
     height: 28px !important;
-    padding: 0 12px !important;
+    padding: 0 10px !important;
     border: 1px solid var(--mr-line-strong) !important;
-    border-radius: 999px !important;
-    background: var(--mr-surface) !important;
-    box-shadow: none !important;
+    border-radius: var(--mr-radius-md) !important;
+    background: var(--mr-input) !important;
+    box-shadow: var(--mr-shadow-xs) !important;
 }
 
 .SortingDropDown .DialogDropDown:hover {
-    border-color: var(--mr-a) !important;
+    border-color: oklch(1 0 0 / 0.24) !important;
+    background: var(--mr-hover) !important;
 }
 
 /* Thin rule next to shelf titles */
@@ -1246,27 +1591,53 @@ input[type="search"]:focus {
 /* Page heading with a summary line on Library home and Downloads (mockup: "Library", "Downloads").
    libraryroot.custom.js adds the element; Steam has no heading of its own there. */
 .mr-page-head {
-    padding: 20px 24px 4px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    padding: 20px 24px 8px;
 }
 
 .mr-page-head h1 {
     margin: 0;
     color: var(--mr-text) !important;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
+    letter-spacing: -0.025em;
+    line-height: 32px;
 }
 
+/* The summary: one small badge per fact ("17 games", "7 installed") */
 .mr-page-head p {
-    margin: 4px 0 0;
-    /* !important: the Downloads page tints its text */
-    color: var(--mr-muted) !important;
-    font-size: 13px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
 }
 
 .mr-page-head p:empty {
     display: none;
+}
+
+.mr-badge {
+    padding: 0 8px;
+    border-radius: var(--mr-radius-md);
+    background: var(--mr-hover);
+    box-shadow: inset 0 0 0 1px var(--mr-line);
+    /* !important: the Downloads page tints its text */
+    color: var(--mr-muted) !important;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 22px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* Something is happening right now ("Downloading") */
+.mr-badge.mr-live {
+    background: var(--mr-a-soft);
+    box-shadow: inset 0 0 0 1px var(--mr-a-ring);
+    color: var(--mr-a) !important;
 }
 
 /* Downloads: the speed card sits closer under its heading */
@@ -1287,8 +1658,9 @@ input[type="search"]:focus {
 
 .DownloadsPage .TopSection > .Section {
     border: 1px solid var(--mr-line);
-    border-radius: var(--mr-r-lg);
+    border-radius: var(--mr-radius-xl);
     background: var(--mr-surface) !important;
+    box-shadow: var(--mr-highlight), var(--mr-shadow-xs);
     overflow: hidden;
 }
 
@@ -1321,23 +1693,26 @@ input[type="search"]:focus {
     letter-spacing: 0 !important;
 }
 
+/* Speeds are numbers that tick: fixed-width digits keep them from jittering */
 .DownloadsPage .DownloadGraphStats .Figure {
     color: var(--mr-text) !important;
     font-weight: 600;
+    font-variant-numeric: tabular-nums;
 }
 
 /* Settings gear: outlined square button */
 .DownloadsPage .SettingsButton .DialogButton,
 .DownloadsPage .SectionItemButtons .DialogButton {
     border: 1px solid var(--mr-line-strong) !important;
-    border-radius: var(--mr-r-sm) !important;
-    background: transparent !important;
+    border-radius: var(--mr-radius-md) !important;
+    background: var(--mr-input) !important;
+    box-shadow: var(--mr-shadow-xs) !important;
     color: var(--mr-text) !important;
 }
 
 .DownloadsPage .SettingsButton .DialogButton:hover,
 .DownloadsPage .SectionItemButtons .DialogButton:hover {
-    background: var(--mr-raised) !important;
+    background: var(--mr-active) !important;
 }
 
 /* "Up Next (0)", "Scheduled (1)" */
@@ -1347,9 +1722,9 @@ input[type="search"]:focus {
 
 .DownloadsPage .SectionTitle {
     color: var(--mr-text) !important;
-    font-size: 16px !important;
+    font-size: 15px !important;
     font-weight: 600 !important;
-    letter-spacing: 0 !important;
+    letter-spacing: -0.01em !important;
 }
 
 .DownloadsPage .SectionTitle .Rule {
@@ -1367,8 +1742,9 @@ input[type="search"]:focus {
     margin-bottom: 8px;
     padding: 10px 14px 10px 10px;
     border: 1px solid var(--mr-line);
-    border-radius: 14px;
+    border-radius: var(--mr-radius-xl);
     background: var(--mr-surface) !important;
+    box-shadow: var(--mr-highlight), var(--mr-shadow-xs);
     box-sizing: border-box;
     transition: border-color var(--mr-ease);
 }
@@ -1378,7 +1754,7 @@ input[type="search"]:focus {
 }
 
 .DownloadsPage .SectionItem .LibraryItemBox {
-    border-radius: var(--mr-r-xs) !important;
+    border-radius: var(--mr-radius-md) !important;
 }
 
 .DownloadsPage .SectionItem .LibraryItemBoxShine {

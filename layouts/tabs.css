@@ -1,0 +1,89 @@
+/* Meridian · Top tabs (main Steam window only)
+   The same app shell as the left rail, turned on its side: the title bar and the
+   navigation row share one dark ground across the top, and the page sits under
+   them as the lighter panel. In the Library the game list joins that dark ground
+   as a sidebar, and the page beside it gets the rounded corner.
+   How a nav item looks is in libraryroot.custom.css, shared with the left rail;
+   this file only places the items. Steam's hover menus keep working here. */
+
+@import url("../tokens.css");
+
+/* ========== 1. Navigation row ========== */
+
+/* Shows through behind the page panel's rounded corner */
+.OuterFrame {
+    background: var(--mr-rail) !important;
+}
+
+/* Same inset as the game list below it, so the two line up on the left */
+.OuterFrame > .TopBar > .SuperNavBar {
+    height: auto !important;
+    padding: 0 8px 8px !important;
+}
+
+.SuperNavBar .SuperNav {
+    gap: 2px;
+    height: auto !important;
+}
+
+/* Back, forward, a little space, then the items */
+.SuperNav .Arrow ~ .Arrow {
+    margin-right: 8px !important;
+}
+
+/* Order on screen: Library, Store, Community, Downloads, then your profile
+   (and Console, in Steam's dev mode). `order` only moves them on screen. */
+.SuperNav .SuperNavMenu {
+    order: 2;
+}
+
+.SuperNav .SuperNavMenu:nth-child(2 of .SuperNavMenu) {
+    order: 1;
+}
+
+.SuperNav .mr-rail-item {
+    order: 3;
+}
+
+.SuperNav .SuperNavMenu:nth-child(n+4 of .SuperNavMenu) {
+    order: 4;
+}
+
+/* ========== 2. Page panel ========== */
+
+/* Store, Community, Downloads: the page fills the width, set off by a hairline */
+.OuterFrame > .ContentFrame {
+    box-sizing: border-box;
+    border-top: 1px solid var(--mr-line);
+}
+
+/* Library and game pages: the game list is a sidebar on the dark ground, with no line
+   between it and the navigation row above... */
+.OuterFrame > .ContentFrame:has(> .LocalContentContainer > .Container > .LeftListSizableContainer) {
+    border-top-color: transparent;
+    background: var(--mr-rail) !important;
+}
+
+.OuterFrame > .ContentFrame > .LocalContentContainer:has(> .Container > .LeftListSizableContainer),
+.OuterFrame .LeftListSizableContainer {
+    background: var(--mr-rail) !important;
+}
+
+/* ...and the page beside it is the panel. Its border replaces the list's own edge
+   and the divider's line (the divider still resizes the list). */
+.OuterFrame .LeftListSizableContainer {
+    border-right: 0;
+}
+
+.OuterFrame .LibraryWindowDivider {
+    background: transparent !important;
+}
+
+.OuterFrame .LibraryWindowDivider + .MainPanel {
+    box-sizing: border-box;
+    border-top: 1px solid var(--mr-line);
+    border-left: 1px solid var(--mr-line);
+    border-top-left-radius: var(--mr-radius-xl);
+    background: var(--mr-bg);
+    overflow: hidden;
+}

@@ -1,319 +1,343 @@
-/**
- * @description This file styles friends list, chat, and other related areas. 
- */
- /* Meridian · Friends list and chat window
-   Matches the docked friends panel from the mockup. */
+/* Meridian · Friends list and chat window
+   Colors, radii and fonts come from tokens.css. */
 
- @import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap");
+@import url("tokens.css");
 
- :root {
-     --mr-rail: #0A0D12;
-     --mr-bg: #0E1116;
-     --mr-surface: #161B22;
-     --mr-raised: #1A212C;
-     --mr-line: #1F2732;
-     --mr-line-strong: #2A3340;
-     --mr-text: #E8ECF1;
-     --mr-muted: #9AA4B2;
-     --mr-ingame: #7DD3A7;
-     --mr-a: var(--mr-accent, #6EA8FE);
-     --mr-on-a: #0A0D12;
-     --mr-r-sm: 10px;
-     --mr-r-md: 12px;
-     --mr-font: "Geist", system-ui, "Segoe UI", sans-serif;
- }
+:root {
+    /* "In game" keeps Steam's green, in the theme's status color */
+    --mr-ingame: var(--mr-ok);
+}
 
- /* ---------- 1. Global: stable hooks ---------- */
+/* ---------- 1. Global: stable hooks ---------- */
 
- body {
-     font-family: var(--mr-font) !important;
-     color: var(--mr-text);
-     background: var(--mr-rail) !important;
-     -webkit-font-smoothing: antialiased;
- }
+body {
+    font-family: var(--mr-font) !important;
+    color: var(--mr-text);
+    background: var(--mr-rail) !important;
+    -webkit-font-smoothing: antialiased;
+}
 
- ::selection {
-     background: var(--mr-a);
-     color: var(--mr-on-a);
- }
+::selection {
+    background: var(--mr-a);
+    color: var(--mr-on-a);
+}
 
- :focus-visible {
-     outline: 2px solid var(--mr-a) !important;
-     outline-offset: 2px;
- }
+:focus-visible {
+    outline: 2px solid var(--mr-a) !important;
+    outline-offset: 2px;
+}
 
- ::-webkit-scrollbar {
-     width: 10px;
-     height: 10px;
- }
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
 
- ::-webkit-scrollbar-track,
- ::-webkit-scrollbar-corner {
-     background: transparent;
- }
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
 
- ::-webkit-scrollbar-thumb {
-     background: var(--mr-line-strong) padding-box;
-     border: 3px solid transparent;
-     border-radius: 999px;
- }
+::-webkit-scrollbar-thumb {
+    background: var(--mr-line-strong) padding-box;
+    border: 3px solid transparent;
+    border-radius: var(--mr-radius-full);
+}
 
- .DialogButton {
-     border-radius: var(--mr-r-sm) !important;
-     background: var(--mr-raised) !important;
-     color: var(--mr-text) !important;
-     box-shadow: none !important;
- }
+::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(1 0 0 / 0.28);
+}
 
- .DialogInput,
- textarea,
- input[type="text"],
- input[type="search"] {
-     border: 1px solid var(--mr-line-strong) !important;
-     border-radius: var(--mr-r-md) !important;
-     background: var(--mr-surface) !important;
-     color: var(--mr-text) !important;
- }
+.DialogButton {
+    border-radius: var(--mr-radius-lg) !important;
+    background: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+    font-weight: 500;
+    box-shadow: var(--mr-highlight), var(--mr-shadow-xs) !important;
+    transition: background-color var(--mr-ease), filter var(--mr-ease);
+}
 
- @media (prefers-reduced-motion: reduce) {
+.DialogButton:hover {
+    background: var(--mr-raised-hover) !important;
+}
 
-     *,
-     *::before,
-     *::after {
-         transition: none !important;
-         animation: none !important;
-     }
- }
+.DialogButton.Primary {
+    background: var(--mr-a) !important;
+    color: var(--mr-on-a) !important;
+    font-weight: 600;
+    box-shadow: inset 0 1px 0 0 oklch(1 0 0 / 0.25), var(--mr-shadow-xs) !important;
+}
 
- /* ---------- 2. Friends list ---------- */
+.DialogButton.Primary:hover {
+    background: var(--mr-a) !important;
+    filter: brightness(1.1);
+}
 
- .friendlistListContainer,
- .friendListFooter,
- .friendListHeaderContainer,
- .FriendsListContent,
- .FriendsListChatSection,
- .chatRoomListContainer {
-     background: var(--mr-rail) !important;
- }
+.DialogInput,
+textarea,
+input[type="text"],
+input[type="search"] {
+    border: 1px solid var(--mr-line-strong) !important;
+    border-radius: var(--mr-radius-lg) !important;
+    background: var(--mr-input) !important;
+    color: var(--mr-text) !important;
+    transition: border-color var(--mr-ease), box-shadow var(--mr-ease);
+}
 
- .chatTitleBar {
-     background: transparent !important;
- }
+.DialogInput:focus,
+textarea:focus,
+input[type="text"]:focus,
+input[type="search"]:focus {
+    border-color: var(--mr-a) !important;
+    box-shadow: 0 0 0 3px var(--mr-a-ring) !important;
+    outline: none !important;
+}
 
- /* Steam's blue-to-teal glow behind the window buttons, and the same gradient
-    as a focus strip along the top edge */
- .title-area-highlight,
- .singleWindowFocusBar {
-     display: none !important;
- }
+@media (prefers-reduced-motion: reduce) {
 
- /* Flat: no inset shadows at the scroll edges */
- .FriendListInsetShadowTop,
- .FriendListInsetShadowBottom {
-     display: none !important;
- }
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}
 
- /* You, at the top: a card with your avatar and status */
- .currentUserContainer {
-     margin: 0 8px;
-     border-bottom: 1px solid var(--mr-line);
-     background: transparent !important;
- }
+/* ---------- 2. Friends list ---------- */
 
- .currentUserContainer .avatarHolder,
- .currentUserContainer img.avatar {
-     border-radius: var(--mr-r-md) !important;
- }
+.friendlistListContainer,
+.friendListFooter,
+.friendListHeaderContainer,
+.FriendsListContent,
+.FriendsListChatSection,
+.chatRoomListContainer {
+    background: var(--mr-rail) !important;
+}
 
- .currentUserContainer .playerName {
-     color: var(--mr-text) !important;
-     font-weight: 600;
- }
+.chatTitleBar {
+    background: transparent !important;
+}
 
- .currentUserContainer .richPresenceLabel {
-     color: var(--mr-muted) !important;
- }
+/* Steam's blue-to-teal glow behind the window buttons, and the same gradient
+   as a focus strip along the top edge */
+.title-area-highlight,
+.singleWindowFocusBar {
+    display: none !important;
+}
 
- .currentUserContainer.online .richPresenceLabel {
-     color: var(--mr-ingame) !important;
- }
+/* Flat: no inset shadows at the scroll edges */
+.FriendListInsetShadowTop,
+.FriendListInsetShadowBottom {
+    display: none !important;
+}
 
- /* "Drag friends here" box */
- .quickAccessFriends {
-     border-radius: var(--mr-r-md);
- }
+/* You, at the top: your avatar and status */
+.currentUserContainer {
+    margin: 0 8px;
+    border-bottom: 1px solid var(--mr-line);
+    background: transparent !important;
+}
 
- .quickAccessFriends .dropTargetBox {
-     border: 1px dashed var(--mr-line-strong) !important;
-     border-radius: var(--mr-r-md);
- }
+.currentUserContainer .avatarHolder,
+.currentUserContainer img.avatar {
+    border-radius: var(--mr-radius-lg) !important;
+}
 
- .quickAccessFriendsMessage {
-     color: var(--mr-muted) !important;
- }
+.currentUserContainer .playerName {
+    color: var(--mr-text) !important;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
 
- /* "Got it!": an accent pill instead of Steam's teal tab */
- .quickAccessFriendsMessageDismiss {
-     padding: 2px 10px !important;
-     border-radius: 999px !important;
-     background: var(--mr-a) !important;
-     color: var(--mr-on-a) !important;
-     font-weight: 600;
-     text-transform: none !important;
-     letter-spacing: 0 !important;
- }
+.currentUserContainer .richPresenceLabel {
+    color: var(--mr-muted) !important;
+}
 
- /* "Friends" tab row: heading, search and small square buttons (mockup: "+") */
- .socialTabContainer,
- .friendTab {
-     background: transparent !important;
-     border: 0 !important;
-     box-shadow: none !important;
- }
+.currentUserContainer.online .richPresenceLabel {
+    color: var(--mr-ingame) !important;
+}
 
- .friendTab .tabLabel {
-     color: var(--mr-text) !important;
-     font-weight: 600;
-     text-transform: none !important;
-     letter-spacing: 0 !important;
- }
+/* "Drag friends here" box: a dashed drop zone */
+.quickAccessFriends {
+    border-radius: var(--mr-radius-lg);
+}
 
- .TabSearchButton {
-     border: 1px solid var(--mr-line-strong);
-     border-radius: var(--mr-r-sm);
-     background: var(--mr-surface) !important;
- }
+.quickAccessFriends .dropTargetBox {
+    border: 1px dashed oklch(1 0 0 / 0.2) !important;
+    border-radius: var(--mr-radius-lg);
+}
 
- .friendRequestButton,
- .friendListButton.addFriendButton,
- .createChatRoomButton {
-     border: 1px solid var(--mr-line-strong) !important;
-     border-radius: 8px !important;
-     background: transparent !important;
-     color: var(--mr-muted) !important;
- }
+.quickAccessFriendsMessage {
+    color: var(--mr-muted) !important;
+}
 
- .friendRequestButton:hover,
- .friendListButton.addFriendButton:hover,
- .createChatRoomButton:hover {
-     background: var(--mr-raised) !important;
-     color: var(--mr-text) !important;
- }
+/* "Got it!": a small accent button instead of Steam's teal tab */
+.quickAccessFriendsMessageDismiss {
+    padding: 2px 10px !important;
+    border-radius: var(--mr-radius-md) !important;
+    background: var(--mr-a) !important;
+    color: var(--mr-on-a) !important;
+    font-weight: 600;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
 
- .friendRequestButton .requestsNumber {
-     border-radius: 999px;
-     background: var(--mr-a) !important;
-     color: var(--mr-on-a) !important;
-     font-weight: 700;
- }
+/* "Friends" tab row: heading, search and small square buttons */
+.socialTabContainer,
+.friendTab {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
 
- /* Group headers ("Offline (12)"): a rounded row, like the mockup's collapsed chip */
- .groupHeaderContainer {
-     margin: 0 8px;
-     border-radius: var(--mr-r-sm);
- }
+.friendTab .tabLabel {
+    color: var(--mr-text) !important;
+    font-weight: 600;
+    text-transform: none !important;
+    letter-spacing: -0.01em !important;
+}
 
- .groupHeaderContainer:hover {
-     background: var(--mr-surface) !important;
- }
+.TabSearchButton {
+    border: 1px solid var(--mr-line-strong);
+    border-radius: var(--mr-radius-md);
+    background: var(--mr-input) !important;
+}
 
- .groupCount {
-     color: var(--mr-muted) !important;
- }
+.friendRequestButton,
+.friendListButton.addFriendButton,
+.createChatRoomButton {
+    border: 1px solid var(--mr-line-strong) !important;
+    border-radius: var(--mr-radius-md) !important;
+    background: transparent !important;
+    color: var(--mr-muted) !important;
+    transition: background-color var(--mr-ease), color var(--mr-ease);
+}
 
- /* "Group Chats" */
- .friendsListSectionTitle,
- .groupChatSectionTitle {
-     background: transparent !important;
-     color: var(--mr-muted) !important;
-     text-transform: none !important;
-     letter-spacing: 0 !important;
-     font-weight: 600;
- }
+.friendRequestButton:hover,
+.friendListButton.addFriendButton:hover,
+.createChatRoomButton:hover {
+    background: var(--mr-hover) !important;
+    color: var(--mr-text) !important;
+}
 
- .FriendsListChatSection {
-     border-top: 1px solid var(--mr-line);
- }
+.friendRequestButton .requestsNumber {
+    border-radius: var(--mr-radius-md);
+    background: var(--mr-a) !important;
+    color: var(--mr-on-a) !important;
+    font-family: var(--mr-mono);
+    font-weight: 500;
+}
 
- .ChatRoomList a {
-     color: var(--mr-a) !important;
- }
+/* Group headers ("Offline (12)"): a rounded row */
+.groupHeaderContainer {
+    margin: 0 8px;
+    border-radius: var(--mr-radius-md);
+}
 
- /* "Online friends", "Offline" and other group headers */
- .groupName {
-     text-transform: none !important;
-     letter-spacing: 0 !important;
-     color: var(--mr-muted) !important;
-     font-weight: 500;
- }
+.groupHeaderContainer:hover {
+    background: var(--mr-hover) !important;
+}
 
- .friendlistListContainer .friend {
-     min-height: 52px;
-     margin: 0 8px;
-     border-radius: var(--mr-r-md);
- }
+.groupCount {
+    color: var(--mr-subtle) !important;
+    font-variant-numeric: tabular-nums;
+}
 
- .friendlistListContainer .friend:hover {
-     background: var(--mr-surface) !important;
- }
+/* "Group Chats" */
+.friendsListSectionTitle,
+.groupChatSectionTitle {
+    background: transparent !important;
+    color: var(--mr-muted) !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    font-weight: 500;
+}
 
- .friend .avatarHolder,
- .friend .avatarHolder img.avatar {
-     border-radius: var(--mr-r-sm) !important;
- }
+.FriendsListChatSection {
+    border-top: 1px solid var(--mr-line);
+}
 
- /* Status: text color carries meaning, Steam's status text stays alongside it */
- .friend.ingame .playerName,
- .friend.ingame .richPresenceLabel {
-     color: var(--mr-ingame) !important;
- }
+.ChatRoomList a {
+    color: var(--mr-a) !important;
+}
 
- .friend.online .playerName {
-     color: var(--mr-text) !important;
- }
+/* "Online friends", "Offline" and other group headers */
+.groupName {
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    color: var(--mr-muted) !important;
+    font-weight: 500;
+}
 
- .friend.offline .playerName {
-     color: var(--mr-muted) !important;
- }
+.friendlistListContainer .friend {
+    min-height: 52px;
+    margin: 0 8px;
+    border-radius: var(--mr-radius-lg);
+    transition: background-color 80ms linear;
+}
 
- .friend.online .richPresenceLabel,
- .friend.offline .richPresenceLabel {
-     color: var(--mr-muted) !important;
- }
+.friendlistListContainer .friend:hover {
+    background: var(--mr-hover) !important;
+}
 
- /* Steam's status bar beside each avatar, in the theme's colors */
- .friend .avatarHolder.ingame .avatarStatus {
-     background: var(--mr-ingame) !important;
- }
+.friend .avatarHolder,
+.friend .avatarHolder img.avatar {
+    border-radius: var(--mr-radius-md) !important;
+}
 
- .friend .avatarHolder.online .avatarStatus {
-     background: var(--mr-a) !important;
- }
+/* Status: text color carries meaning, Steam's status text stays alongside it */
+.friend.ingame .playerName,
+.friend.ingame .richPresenceLabel {
+    color: var(--mr-ingame) !important;
+}
 
- /* ---------- 3. Chat ---------- */
+.friend.online .playerName {
+    color: var(--mr-text) !important;
+}
 
- .chatTabSetContainer {
-     background: var(--mr-rail) !important;
-     border-bottom: 1px solid var(--mr-line);
- }
+.friend.offline .playerName {
+    color: var(--mr-muted) !important;
+}
 
- .chatTab.active {
-     box-shadow: inset 0 -2px 0 var(--mr-a) !important;
- }
+.friend.online .richPresenceLabel,
+.friend.offline .richPresenceLabel {
+    color: var(--mr-muted) !important;
+}
 
- .chatHistory,
- .chatHistoryScroll {
-     background: var(--mr-bg) !important;
- }
+/* Steam's status bar beside each avatar, in the theme's colors */
+.friend .avatarHolder.ingame .avatarStatus {
+    background: var(--mr-ingame) !important;
+}
 
- .chatHistory .ChatMessageBlock {
-     padding: 8px 12px;
-     border-radius: var(--mr-r-md);
-     background: var(--mr-surface);
- }
+.friend .avatarHolder.online .avatarStatus {
+    background: var(--mr-a) !important;
+}
 
- .chatSubmitButton {
-     border-radius: var(--mr-r-sm) !important;
-     background: var(--mr-a) !important;
-     color: var(--mr-on-a) !important;
- }
+/* ---------- 3. Chat ---------- */
+
+.chatTabSetContainer {
+    background: var(--mr-rail) !important;
+    border-bottom: 1px solid var(--mr-line);
+}
+
+.chatTab.active {
+    box-shadow: inset 0 -2px 0 var(--mr-a) !important;
+}
+
+.chatHistory,
+.chatHistoryScroll {
+    background: var(--mr-bg) !important;
+}
+
+.chatHistory .ChatMessageBlock {
+    padding: 8px 12px;
+    border-radius: var(--mr-radius-xl);
+    background: var(--mr-surface);
+    box-shadow: inset 0 0 0 1px var(--mr-line);
+}
+
+.chatSubmitButton {
+    border-radius: var(--mr-radius-lg) !important;
+    background: var(--mr-a) !important;
+    color: var(--mr-on-a) !important;
+    box-shadow: inset 0 1px 0 0 oklch(1 0 0 / 0.25);
+}

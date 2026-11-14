@@ -6,81 +6,66 @@
    2. Colors written straight into each component. Those need a class rule,
       so section 3 targets the readable class names (BasicHome, QuickAccessMenu...). */
 
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap");
-
-:root {
-    --mr-rail: #0A0D12;
-    --mr-bg: #0E1116;
-    --mr-surface: #161B22;
-    --mr-raised: #1A212C;
-    --mr-line: #1F2732;
-    --mr-line-strong: #2A3340;
-    --mr-text: #E8ECF1;
-    --mr-muted: #9AA4B2;
-    --mr-ok: #7DD3A7;
-    --mr-a: var(--mr-accent, #6EA8FE);
-    --mr-on-a: #0A0D12;
-    --mr-r-md: 12px;
-    --mr-font: "Geist", "Motiva Sans", system-ui, sans-serif;
-}
+@import url("tokens.css");
 
 /* ========== 1. Shared color scales ========== */
 
 :root,
 body {
-    /* Greys, darkest to lightest. Steam has two names for the same ramp. */
-    --color-dull-1: #0A0D12 !important;
-    --color-dull-2: #0E1116 !important;
-    --color-dull-3: #161B22 !important;
-    --color-dull-4: #1A212C !important;
-    --color-dull-5: #1F2732 !important;
-    --color-dull-6: #232B37 !important;
-    --color-dull-7: #2A3340 !important;
-    --color-dull-8: #3A4452 !important;
-    --color-dull-9: #4A5563 !important;
-    --color-dull-10: #7C8796 !important;
-    --color-dull-11: #9AA4B2 !important;
-    --color-dull-12: #E8ECF1 !important;
+    /* Greys, darkest to lightest: the zinc ramp from tokens.css, with a few
+       in-between steps. Steam has two names for the same ramp. */
+    --color-dull-1: var(--mr-zinc-950) !important;
+    --color-dull-2: var(--mr-bg) !important;
+    --color-dull-3: var(--mr-zinc-900) !important;
+    --color-dull-4: oklch(0.242 0.006 285.96) !important;
+    --color-dull-5: var(--mr-zinc-800) !important;
+    --color-dull-6: oklch(0.322 0.01 285.92) !important;
+    --color-dull-7: var(--mr-zinc-700) !important;
+    --color-dull-8: var(--mr-zinc-600) !important;
+    --color-dull-9: var(--mr-zinc-500) !important;
+    --color-dull-10: oklch(0.629 0.016 286) !important;
+    --color-dull-11: var(--mr-zinc-400) !important;
+    --color-dull-12: var(--mr-zinc-100) !important;
 
-    --color-greyneutral-1: #0A0D12 !important;
-    --color-greyneutral-2: #0E1116 !important;
-    --color-greyneutral-3: #161B22 !important;
-    --color-greyneutral-4: #1A212C !important;
-    --color-greyneutral-5: #1F2732 !important;
-    --color-greyneutral-6: #232B37 !important;
-    --color-greyneutral-7: #2A3340 !important;
-    --color-greyneutral-8: #3A4452 !important;
-    --color-greyneutral-9: #4A5563 !important;
-    --color-greyneutral-10: #7C8796 !important;
-    --color-greyneutral-11: #9AA4B2 !important;
-    --color-greyneutral-12: #E8ECF1 !important;
+    --color-greyneutral-1: var(--mr-zinc-950) !important;
+    --color-greyneutral-2: var(--mr-bg) !important;
+    --color-greyneutral-3: var(--mr-zinc-900) !important;
+    --color-greyneutral-4: oklch(0.242 0.006 285.96) !important;
+    --color-greyneutral-5: var(--mr-zinc-800) !important;
+    --color-greyneutral-6: oklch(0.322 0.01 285.92) !important;
+    --color-greyneutral-7: var(--mr-zinc-700) !important;
+    --color-greyneutral-8: var(--mr-zinc-600) !important;
+    --color-greyneutral-9: var(--mr-zinc-500) !important;
+    --color-greyneutral-10: oklch(0.629 0.016 286) !important;
+    --color-greyneutral-11: var(--mr-zinc-400) !important;
+    --color-greyneutral-12: var(--mr-zinc-100) !important;
 
     /* Accent ramp built from the one theme accent, dark tints to light */
-    --color-accent-1: color-mix(in srgb, var(--mr-a) 6%, #0E1116) !important;
-    --color-accent-2: color-mix(in srgb, var(--mr-a) 10%, #0E1116) !important;
-    --color-accent-3: color-mix(in srgb, var(--mr-a) 18%, #0E1116) !important;
-    --color-accent-4: color-mix(in srgb, var(--mr-a) 26%, #0E1116) !important;
-    --color-accent-5: color-mix(in srgb, var(--mr-a) 34%, #0E1116) !important;
-    --color-accent-6: color-mix(in srgb, var(--mr-a) 44%, #0E1116) !important;
-    --color-accent-7: color-mix(in srgb, var(--mr-a) 62%, #0E1116) !important;
+    --color-accent-1: color-mix(in oklab, var(--mr-a) 6%, var(--mr-bg)) !important;
+    --color-accent-2: color-mix(in oklab, var(--mr-a) 10%, var(--mr-bg)) !important;
+    --color-accent-3: color-mix(in oklab, var(--mr-a) 18%, var(--mr-bg)) !important;
+    --color-accent-4: color-mix(in oklab, var(--mr-a) 26%, var(--mr-bg)) !important;
+    --color-accent-5: color-mix(in oklab, var(--mr-a) 34%, var(--mr-bg)) !important;
+    --color-accent-6: color-mix(in oklab, var(--mr-a) 44%, var(--mr-bg)) !important;
+    --color-accent-7: color-mix(in oklab, var(--mr-a) 62%, var(--mr-bg)) !important;
     --color-accent-8: var(--mr-a) !important;
     --color-accent-9: var(--mr-a) !important;
-    --color-accent-10: color-mix(in srgb, var(--mr-a) 85%, #FFFFFF) !important;
-    --color-accent-11: color-mix(in srgb, var(--mr-a) 72%, #FFFFFF) !important;
-    --color-accent-12: color-mix(in srgb, var(--mr-a) 35%, #FFFFFF) !important;
+    --color-accent-10: color-mix(in oklab, var(--mr-a) 85%, white) !important;
+    --color-accent-11: color-mix(in oklab, var(--mr-a) 72%, white) !important;
+    --color-accent-12: color-mix(in oklab, var(--mr-a) 35%, white) !important;
     --color-accent-contrast: var(--mr-on-a) !important;
 
     /* Text, brightest to faintest */
-    --color-text-body-title: #E8ECF1 !important;
-    --color-text-light-title: #E8ECF1 !important;
-    --color-text-body-subtitle: #D0D6DE !important;
-    --color-text-light-subtitle: #D0D6DE !important;
-    --color-text-body-body: #B4BCC7 !important;
-    --color-text-light-body: #B4BCC7 !important;
-    --color-text-body-description: #9AA4B2 !important;
-    --color-text-light-description: #9AA4B2 !important;
-    --color-text-body-note: #6B7583 !important;
-    --color-text-light-note: #6B7583 !important;
+    --color-text-body-title: var(--mr-zinc-100) !important;
+    --color-text-light-title: var(--mr-zinc-100) !important;
+    --color-text-body-subtitle: var(--mr-zinc-200) !important;
+    --color-text-light-subtitle: var(--mr-zinc-200) !important;
+    --color-text-body-body: var(--mr-zinc-300) !important;
+    --color-text-light-body: var(--mr-zinc-300) !important;
+    --color-text-body-description: var(--mr-zinc-400) !important;
+    --color-text-light-description: var(--mr-zinc-400) !important;
+    --color-text-body-note: var(--mr-zinc-500) !important;
+    --color-text-light-note: var(--mr-zinc-500) !important;
 
     /* Steam's own accent setting, used by some newer panels */
     --SystemAccentColor: var(--mr-a) !important;
@@ -113,14 +98,14 @@ body {
    so Meridian recolors those states instead of adding a second focus ring. */
 
 button.DialogButton {
-    border-radius: var(--mr-r-md) !important;
+    border-radius: var(--mr-radius-xl) !important;
     background: var(--mr-raised) !important;
     color: var(--mr-text) !important;
 }
 
 button.DialogButton:hover,
 button.DialogButton.gpfocus {
-    background: var(--mr-line-strong) !important;
+    background: var(--mr-raised-hover) !important;
 }
 
 /* Play and primary actions: one flat accent, no gradient */
@@ -160,7 +145,7 @@ button.DialogButton.GreenPlay.gpfocus {
 .LibraryItemBox,
 .LibraryItemBox .Capsule,
 .CarouselCapsuleBackgroundGlow {
-    border-radius: var(--mr-r-md) !important;
+    border-radius: var(--mr-radius-xl) !important;
     overflow: hidden;
 }
 
@@ -177,7 +162,7 @@ button.DialogButton.GreenPlay.gpfocus {
 }
 
 .RecentlyCompletedItem {
-    border-radius: var(--mr-r-md);
+    border-radius: var(--mr-radius-xl);
     overflow: hidden;
 }
 
@@ -198,7 +183,7 @@ button.DialogButton.GreenPlay.gpfocus {
 
 /* Button hints along the bottom (Menu / Options / Select / Back) */
 .BasicFooter {
-    background: rgb(10 13 18 / 0.85) !important;
+    background: color-mix(in oklab, var(--mr-rail) 85%, transparent) !important;
     border-top: 1px solid var(--mr-line);
 }
 

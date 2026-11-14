@@ -1,7 +1,7 @@
 {
     "name": "Meridian",
-    "description": "Calm, modern dark theme: flat surfaces, one accent color, clearer hierarchy.",
-    "version": "1.0.0",
+    "description": "Calm, modern dark theme with a web-app feel: neutral surfaces, hairline borders, one accent color, clearer hierarchy.",
+    "version": "1.1.0",
     "author": "Starluck",
     "tags": [
         "Dark",
@@ -16,7 +16,7 @@
     "UseDefaultPatches": true,
     "Conditions": {
         "Navigation": {
-            "description": "Left rail puts Store, Library, Community and your profile in a sidebar, like the Meridian mockup. Top tabs keeps Steam's layout and its hover menus.",
+            "description": "Left rail puts Library, Store, Community and your profile in a sidebar, with the page as a panel beside it. Top tabs puts the same items in a row under the title bar and keeps Steam's hover menus.",
             "tab": "Layout",
             "default": "Left rail",
             "values": {
@@ -28,7 +28,14 @@
                         "src": "layouts/rail.css"
                     }
                 },
-                "Top tabs": {}
+                "Top tabs": {
+                    "TargetCss": {
+                        "affects": [
+                            "^Steam$"
+                        ],
+                        "src": "layouts/tabs.css"
+                    }
+                }
             }
         },
         "Accent color": {

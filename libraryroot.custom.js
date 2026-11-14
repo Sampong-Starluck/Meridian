@@ -33,10 +33,10 @@
 /**
  * Meridian · pieces of the mockup Steam has no element for.
  *
- * - Library home and Downloads get a page heading with a one-line summary.
- * - The rail's profile item shows your avatar (CSS reads --mr-avatar).
- * - The rail gets a Downloads item with a queue badge. It is the highlighted item
- *   on the Downloads page (Steam itself keeps "Library" selected there).
+ * - Library home and Downloads get a page heading with summary badges.
+ * - The navigation's profile item shows your avatar (CSS reads --mr-avatar).
+ * - The navigation gets a Downloads item with a queue badge, in both layouts. It is the
+ *   highlighted item on the Downloads page (Steam itself keeps "Library" selected there).
  * - Ctrl+K focuses library search; the box shows a search icon and the shortcut.
  *
  * Steam re-renders often, so everything is re-applied on DOM changes, at most once a frame.
@@ -64,23 +64,24 @@
     }
 
     // Counts come from Steam's collection store in the shared JS context.
+    // A summary is a list of facts; each one is shown as its own badge.
     function librarySummary() {
         try {
             const store = shared().collectionStore;
-            if (!store) return "";
+            if (!store) return [];
             const games = store.GetCollection("type-games");
             const total = games ? games.allApps.length : 0;
             const installed = store.localGamesCollection ? store.localGamesCollection.allApps.length : 0;
-            if (!total) return "";
-            return `${total} games · ${installed} installed`;
+            if (!total) return [];
+            return [{ text: `${total} games` }, { text: `${installed} installed` }];
         } catch (e) {
-            return "";
+            return [];
         }
     }
 
-    // Page title with a one-line summary, inserted before `before` inside `parent`.
+    // Page title with summary badges, inserted before `before` inside `parent`.
     // React only moves its own nodes, so an extra node at the front stays put.
-    function ensurePageHead(parent, before, title, text) {
+    function ensurePageHead(parent, before, title, facts) {
         let head = parent.querySelector(":scope > .mr-page-head");
         if (!head) {
             head = document.createElement("header");
@@ -89,8 +90,18 @@
             head.querySelector("h1").textContent = title;
             parent.insertBefore(head, before);
         }
+        // Rebuild only when the facts change: this runs on every DOM mutation.
         const p = head.querySelector("p");
-        if (p.textContent !== text) p.textContent = text;
+        const key = facts.map((fact) => (fact.live ? "*" : "") + fact.text).join("|");
+        if (p.dataset.mrKey === key) return;
+        p.dataset.mrKey = key;
+        p.textContent = "";
+        for (const fact of facts) {
+            const badge = document.createElement("span");
+            badge.className = fact.live ? "mr-badge mr-live" : "mr-badge";
+            badge.textContent = fact.text;
+            p.appendChild(badge);
+        }
     }
 
     function ensureLibraryHead() {
@@ -116,7 +127,7 @@
         root.style.setProperty("--mr-avatar", `url("${img.src}")`);
     }
 
-    /* ---- Downloads item in the rail ---- */
+    /* ---- Downloads item in the navigation (sidebar or top row) ---- */
 
     // Unfinished transfers: running, queued and scheduled updates.
     function downloadSummary() {
@@ -131,20 +142,20 @@
         }
     }
 
-    // Subtitle under the Downloads heading, e.g. "Downloading · 2 in queue · 1 scheduled".
+    // Badges beside the Downloads heading, e.g. "Downloading", "2 in queue", "1 scheduled".
     function downloadsPageSummary() {
         try {
             const store = shared().downloadsStore;
             const { active } = downloadSummary();
             const queued = (store.QueuedTransfers || []).length;
             const scheduled = (store.ScheduledTransfers || []).length;
-            const parts = [];
-            if (active) parts.push("Downloading");
-            if (queued) parts.push(`${queued} in queue`);
-            if (scheduled) parts.push(`${scheduled} scheduled`);
-            return parts.length ? parts.join(" · ") : "Nothing in the queue";
+            const facts = [];
+            if (active) facts.push({ text: "Downloading", live: true });
+            if (queued) facts.push({ text: `${queued} in queue` });
+            if (scheduled) facts.push({ text: `${scheduled} scheduled` });
+            return facts.length ? facts : [{ text: "Nothing in the queue" }];
         } catch (e) {
-            return "";
+            return [];
         }
     }
 
@@ -166,7 +177,7 @@
                     go();
                 }
             });
-            // Appended after Steam's own items; CSS `order` places it after Community.
+            // Appended after Steam's own items; the layout's CSS `order` places it after Community.
             nav.appendChild(item);
         }
 
@@ -179,7 +190,7 @@
         if (item.getAttribute("aria-label") !== label) item.setAttribute("aria-label", label);
     }
 
-    // Lets CSS move the rail highlight off "Library" while Downloads is open.
+    // Lets CSS move the navigation highlight off "Library" while Downloads is open.
     function syncRoute() {
         const history = mainHistory();
         const path = history && history.location ? history.location.pathname : "";
