@@ -2,6 +2,12 @@
 
 What changed in each version of Meridian, newest first. The version number is the one in `skin.json`.
 
+## 1.3.1 - 2026-11-15
+
+### Fixed
+
+- **In the rail** no longer leaks into pages that are not the Library. Each rule now waits for Steam's `Library` marker on the content container, which only Library and game pages carry, instead of only looking for the game list in the window. The Store and Community web views keep the rail beside them again, and the Millennium settings page is no longer drawn under the navigation.
+
 ## 1.3.0 - 2026-11-15
 
 ### Added

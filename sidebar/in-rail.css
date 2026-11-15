@@ -31,8 +31,16 @@
         --mr-nav-dev: 1;
     }
 
+    /* Only while the Library is the page on screen. Steam keeps the game list in the
+       window when a Store web view or a settings page is in front of it, so asking for
+       the list alone would also restyle those pages: the content frame would stretch
+       under the rail (a web view laid over it then covers the rail) and the raised
+       navigation would sit on top of the settings page. Steam puts the `Library` class
+       on the Library's content container on Library routes only, and the game pages
+       keep it, so it is the signal for "the Library is showing". */
+
     /* The navigation: only as tall as its items, above the content frame */
-    .OuterFrame:has(> .ContentFrame > .LocalContentContainer > .Container > .LeftListSizableContainer) > .TopBar > .SuperNavBar {
+    .OuterFrame:has(> .ContentFrame > .LocalContentContainer.Library > .Container > .LeftListSizableContainer) > .TopBar > .SuperNavBar {
         grid-row: 2;
         align-self: start;
         position: relative;
@@ -42,7 +50,7 @@
     }
 
     /* The content frame: across both columns, on the rail's ground */
-    .OuterFrame > .ContentFrame:has(> .LocalContentContainer > .Container > .LeftListSizableContainer) {
+    .OuterFrame > .ContentFrame:has(> .LocalContentContainer.Library > .Container > .LeftListSizableContainer) {
         grid-column: 1 / -1;
         border-top-color: transparent;
         border-left-width: 0;
@@ -50,7 +58,7 @@
         background: var(--mr-rail) !important;
     }
 
-    .OuterFrame > .ContentFrame > .LocalContentContainer:has(> .Container > .LeftListSizableContainer) {
+    .OuterFrame > .ContentFrame > .LocalContentContainer.Library:has(> .Container > .LeftListSizableContainer) {
         background: var(--mr-rail) !important;
     }
 
@@ -58,7 +66,7 @@
        stopping above the docked bottom bar. 87px = the profile row, the rule under
        it and the space around this list's own rule, which sits just under the
        navigation; each item row is its height plus a 2px gap. */
-    .OuterFrame .LocalContentContainer .LeftListSizableContainer {
+    .OuterFrame .LocalContentContainer.Library .LeftListSizableContainer {
         --mr-sub-top: calc(87px + (var(--mr-nav-h) + 2px) * (3 + var(--mr-nav-dl) + var(--mr-nav-dev)));
         flex: 0 0 var(--mr-rail-w) !important;
         width: var(--mr-rail-w) !important;
@@ -71,7 +79,7 @@
     }
 
     /* Rule between the navigation items and the list */
-    .OuterFrame .LocalContentContainer .LeftListSizableContainer::before {
+    .OuterFrame .LocalContentContainer.Library .LeftListSizableContainer::before {
         content: "";
         position: absolute;
         top: calc(var(--mr-sub-top) - 9px);
@@ -82,7 +90,7 @@
     }
 
     /* The list is as wide as the rail, so there is nothing to drag */
-    .OuterFrame .LocalContentContainer .LibraryWindowDivider {
+    .OuterFrame .LocalContentContainer.Library .LibraryWindowDivider {
         width: 0 !important;
         min-width: 0 !important;
         background: transparent !important;
@@ -90,7 +98,7 @@
     }
 
     /* The page beside the rail is the panel */
-    .OuterFrame .LocalContentContainer .LibraryWindowDivider + .MainPanel {
+    .OuterFrame .LocalContentContainer.Library .LibraryWindowDivider + .MainPanel {
         box-sizing: border-box;
         min-width: 0;
         border-top: 1px solid var(--mr-line);
