@@ -1,0 +1,39 @@
+/* Meridian · Library sidebar: Blended (main Steam window only)
+   The game list joins the dark ground of the navigation with no line between them,
+   so the two read as one sidebar, and the page beside them is the lighter panel
+   with the rounded corner. Top tabs already draws the Library this way, so this
+   file only changes the Left rail layout. */
+
+@import url("../tokens.css");
+
+/* Library and game pages: the content frame gives up its own panel edge... */
+.OuterFrame > .ContentFrame:has(> .LocalContentContainer > .Container > .LeftListSizableContainer) {
+    border-top-color: transparent;
+    border-left-color: transparent;
+    border-top-left-radius: 0;
+    background: var(--mr-rail) !important;
+}
+
+.OuterFrame > .ContentFrame > .LocalContentContainer:has(> .Container > .LeftListSizableContainer),
+.OuterFrame .LocalContentContainer .LeftListSizableContainer {
+    background: var(--mr-rail) !important;
+}
+
+.OuterFrame .LocalContentContainer .LeftListSizableContainer {
+    border-right: 0;
+}
+
+/* The divider keeps resizing the list; only its line goes */
+.OuterFrame .LocalContentContainer .LibraryWindowDivider {
+    background: transparent !important;
+}
+
+/* ...and the page beside the list becomes the panel */
+.OuterFrame .LocalContentContainer .LibraryWindowDivider + .MainPanel {
+    box-sizing: border-box;
+    border-top: 1px solid var(--mr-line);
+    border-left: 1px solid var(--mr-line);
+    border-top-left-radius: var(--mr-radius-xl);
+    background: var(--mr-bg);
+    overflow: hidden;
+}

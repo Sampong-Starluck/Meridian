@@ -8,6 +8,11 @@
 
 @import url("../tokens.css");
 
+/* Lets the Library sidebar options (sidebar/*.css) tell the two layouts apart */
+:root {
+    --mr-layout: tabs;
+}
+
 /* ========== 1. Navigation row ========== */
 
 /* Shows through behind the page panel's rounded corner */

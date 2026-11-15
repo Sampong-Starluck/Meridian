@@ -1,0 +1,142 @@
+/* Meridian · Library sidebar: Top bar (main Steam window, both layouts)
+   Home, the collections button, the view picker and search become one row above
+   the page, on the same dark ground as the navigation. The game list is a panel
+   that drops down from that row while you point at the view picker or search, or
+   while the search box has focus (so Ctrl+K still shows results as you type). */
+
+@import url("../tokens.css");
+
+.OuterFrame {
+    --mr-bar-h: 48px;
+    --mr-bar-pad: 12px;
+    --mr-bar-home-w: 96px;
+    --mr-bar-list-w: 360px;
+}
+
+/* ========== 1. Frame: the row is chrome, the page under it is the panel ========== */
+
+.OuterFrame > .ContentFrame:has(> .LocalContentContainer > .Container > .LeftListSizableContainer) {
+    border-top-color: transparent;
+    border-left-color: transparent;
+    border-top-left-radius: 0;
+    background: var(--mr-rail) !important;
+}
+
+.OuterFrame > .ContentFrame > .LocalContentContainer:has(> .Container > .LeftListSizableContainer) {
+    background: var(--mr-rail) !important;
+}
+
+/* List above page instead of beside it */
+.OuterFrame .LocalContentContainer > .Container:has(> .LeftListSizableContainer) {
+    flex-direction: column !important;
+}
+
+.OuterFrame .LocalContentContainer .LeftListSizableContainer {
+    flex: 0 0 var(--mr-bar-h) !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: var(--mr-bar-h);
+    /* Above the page, so the game list can drop down over it */
+    z-index: 13;
+    border-right: 0;
+    background: var(--mr-rail) !important;
+}
+
+.OuterFrame .LocalContentContainer .LibraryWindowDivider {
+    display: none !important;
+}
+
+.OuterFrame .LocalContentContainer .LibraryWindowDivider + .MainPanel {
+    box-sizing: border-box;
+    min-height: 0;
+    border-top: 1px solid var(--mr-line);
+    border-left: 0;
+    border-top-left-radius: 0;
+    background: var(--mr-bg);
+    overflow: hidden;
+}
+
+/* Left rail: the page keeps its rounded corner next to the rail */
+@container style(--mr-layout: rail) {
+    .OuterFrame .LocalContentContainer .LibraryWindowDivider + .MainPanel {
+        border-left: 1px solid var(--mr-line);
+        border-top-left-radius: var(--mr-radius-xl);
+    }
+}
+
+/* ========== 2. The row ==========
+   Steam stacks these as rows of the list; here they sit side by side. Each one is
+   as tall as the row (padded, not centered), so moving the pointer down from it
+   reaches the game list without a gap. */
+
+.OuterFrame .LocalContentContainer .LeftListSizableContainer > .Container {
+    flex-direction: row !important;
+    gap: 8px;
+    min-width: 0;
+    padding: 0 var(--mr-bar-pad);
+}
+
+/* Home and the collections button */
+.OuterFrame .LeftListSizableContainer > .Container > .GameListHomeAndSearch {
+    flex: 0 0 auto;
+    height: var(--mr-bar-h) !important;
+    gap: 4px;
+    padding: calc((var(--mr-bar-h) - 32px) / 2) 0 !important;
+    box-sizing: border-box;
+}
+
+.OuterFrame .LeftListSizableContainer > .Container > .GameListHomeAndSearch .HomeBox {
+    flex: 0 0 var(--mr-bar-home-w);
+    width: var(--mr-bar-home-w);
+}
+
+/* View picker ("Games and Software") and its two filter buttons */
+.OuterFrame .LeftListSizableContainer > .Container > .Bar {
+    flex: 0 0 240px;
+    padding: calc((var(--mr-bar-h) - 32px) / 2) 0 !important;
+    box-sizing: border-box;
+}
+
+/* Search and the advanced filter button */
+.OuterFrame .LeftListSizableContainer > .Container > .Container:has(> .SearchInput) {
+    flex: 0 1 300px;
+    margin: 0 !important;
+    padding: calc((var(--mr-bar-h) - 32px) / 2) 0;
+    box-sizing: border-box;
+}
+
+/* ========== 3. The game list, as a drop-down panel ==========
+   Hidden with visibility, not display, so Steam's list keeps its size and rows.
+   It closes a moment after the pointer leaves, so crossing a gap does not shut it. */
+
+.OuterFrame .LeftListSizableContainer > .Container > .Container:not(:has(> .SearchInput)) {
+    position: absolute !important;
+    top: calc(100% - 4px);
+    /* Under the view picker: past Home, the collections button and the gaps */
+    left: calc(var(--mr-bar-pad) + var(--mr-bar-home-w) + 4px + 21px + 8px);
+    z-index: 15;
+    flex: none !important;
+    width: var(--mr-bar-list-w);
+    height: min(640px, calc(100vh - 220px));
+    padding: 6px;
+    box-sizing: border-box;
+    border: 1px solid var(--mr-line-strong);
+    border-radius: var(--mr-radius-xl);
+    background: var(--mr-raised) !important;
+    box-shadow: var(--mr-shadow-lg) !important;
+    overflow: hidden;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 120ms ease 200ms, visibility 0s linear 320ms;
+}
+
+.OuterFrame .LeftListSizableContainer > .Container:is(
+        :has(> .Bar:hover),
+        :has(> .Container:hover),
+        :has(.SearchInput input:focus)
+    ) > .Container:not(:has(> .SearchInput)) {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 120ms ease 120ms, visibility 0s linear 120ms;
+}

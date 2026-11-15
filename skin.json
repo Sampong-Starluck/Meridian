@@ -1,7 +1,7 @@
 {
     "name": "Meridian",
     "description": "Calm, modern dark theme with a web-app feel: neutral surfaces, hairline borders, one accent color, clearer hierarchy.",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "author": "Starluck",
     "tags": [
         "Dark",
@@ -34,6 +34,38 @@
                             "^Steam$"
                         ],
                         "src": "layouts/tabs.css"
+                    }
+                }
+            }
+        },
+        "Library sidebar": {
+            "description": "Where the Library's game list goes. Side panel keeps it as its own column inside the page. Blended puts it on the same dark ground as the navigation, with no line between them. In the rail moves it into the left sidebar under the navigation items (Left rail only). Top bar puts Home, the view picker and search in a row above the page, and the game list drops down from it.",
+            "tab": "Layout",
+            "default": "Side panel",
+            "values": {
+                "Side panel": {},
+                "Blended": {
+                    "TargetCss": {
+                        "affects": [
+                            "^Steam$"
+                        ],
+                        "src": "sidebar/blended.css"
+                    }
+                },
+                "In the rail": {
+                    "TargetCss": {
+                        "affects": [
+                            "^Steam$"
+                        ],
+                        "src": "sidebar/in-rail.css"
+                    }
+                },
+                "Top bar": {
+                    "TargetCss": {
+                        "affects": [
+                            "^Steam$"
+                        ],
+                        "src": "sidebar/top-bar.css"
                     }
                 }
             }

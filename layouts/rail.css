@@ -7,6 +7,8 @@
 @import url("../tokens.css");
 
 :root {
+    /* Lets the Library sidebar options (sidebar/*.css) tell the two layouts apart */
+    --mr-layout: rail;
     --mr-rail-w: 220px;
     /* Room left under the nav items for the docked bottom bar (section 3) */
     --mr-dock-h: 160px;

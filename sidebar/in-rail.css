@@ -1,0 +1,102 @@
+/* Meridian · Library sidebar: In the rail (main Steam window, Left rail only)
+   The game list moves into the left rail, under the navigation items, so the
+   Library has one sidebar and the page takes the rest of the width.
+   How: on Library and game pages the content frame also covers the rail's column,
+   the navigation shrinks to its items and sits on top of it, and the game list is
+   the frame's first column, as wide as the rail and padded down past the items.
+   The style query keeps this file out of the Top tabs layout, which has no rail
+   (layouts/rail.css sets --mr-layout). */
+
+@import url("../tokens.css");
+
+/* A little wider than the plain rail, so the view picker and search fit.
+   Doubled selector: layouts/rail.css sets the same variable on :root. */
+:root:root {
+    --mr-rail-w: 248px;
+}
+
+@container style(--mr-layout: rail) {
+    /* Rows under the profile row: Library, Store, Community, plus Downloads
+       (added by libraryroot.custom.js) and Console (Steam's dev mode) */
+    .OuterFrame {
+        --mr-nav-dl: 0;
+        --mr-nav-dev: 0;
+    }
+
+    .OuterFrame:has(.SuperNav > .mr-rail-item) {
+        --mr-nav-dl: 1;
+    }
+
+    .OuterFrame:has(.SuperNav > .SuperNavMenu:nth-child(5 of .SuperNavMenu)) {
+        --mr-nav-dev: 1;
+    }
+
+    /* The navigation: only as tall as its items, above the content frame */
+    .OuterFrame:has(> .ContentFrame > .LocalContentContainer > .Container > .LeftListSizableContainer) > .TopBar > .SuperNavBar {
+        grid-row: 2;
+        align-self: start;
+        position: relative;
+        z-index: 1;
+        padding-bottom: 0 !important;
+        overflow: visible;
+    }
+
+    /* The content frame: across both columns, on the rail's ground */
+    .OuterFrame > .ContentFrame:has(> .LocalContentContainer > .Container > .LeftListSizableContainer) {
+        grid-column: 1 / -1;
+        border-top-color: transparent;
+        border-left-width: 0;
+        border-top-left-radius: 0;
+        background: var(--mr-rail) !important;
+    }
+
+    .OuterFrame > .ContentFrame > .LocalContentContainer:has(> .Container > .LeftListSizableContainer) {
+        background: var(--mr-rail) !important;
+    }
+
+    /* The game list: the rail's width, starting under the navigation items and
+       stopping above the docked bottom bar. 87px = the profile row, the rule under
+       it and the space around this list's own rule, which sits just under the
+       navigation; each item row is its height plus a 2px gap. */
+    .OuterFrame .LocalContentContainer .LeftListSizableContainer {
+        --mr-sub-top: calc(87px + (var(--mr-nav-h) + 2px) * (3 + var(--mr-nav-dl) + var(--mr-nav-dev)));
+        flex: 0 0 var(--mr-rail-w) !important;
+        width: var(--mr-rail-w) !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        padding: var(--mr-sub-top) 6px var(--mr-dock-h);
+        box-sizing: border-box;
+        border-right: 0;
+        background: var(--mr-rail) !important;
+    }
+
+    /* Rule between the navigation items and the list */
+    .OuterFrame .LocalContentContainer .LeftListSizableContainer::before {
+        content: "";
+        position: absolute;
+        top: calc(var(--mr-sub-top) - 9px);
+        left: 12px;
+        right: 12px;
+        height: 1px;
+        background: var(--mr-line);
+    }
+
+    /* The list is as wide as the rail, so there is nothing to drag */
+    .OuterFrame .LocalContentContainer .LibraryWindowDivider {
+        width: 0 !important;
+        min-width: 0 !important;
+        background: transparent !important;
+        pointer-events: none;
+    }
+
+    /* The page beside the rail is the panel */
+    .OuterFrame .LocalContentContainer .LibraryWindowDivider + .MainPanel {
+        box-sizing: border-box;
+        min-width: 0;
+        border-top: 1px solid var(--mr-line);
+        border-left: 1px solid var(--mr-line);
+        border-top-left-radius: var(--mr-radius-xl);
+        background: var(--mr-bg);
+        overflow: hidden;
+    }
+}
