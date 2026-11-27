@@ -1,0 +1,492 @@
+/* Meridian · Valve's newer Store pages (wishlist, personal calendar and other pages
+   served from store/ssr/). Imported by webkit.css.
+
+   1. Valve's design system: a 12-step grey scale and named text roles. These names
+      are stable, so remapping them themes every component built on them.
+   2. Older page modules hard-code Valve's navy on scrambled class names (".-eI1hK-YHzA-").
+      Those names change whenever Valve rebuilds a module. Each rule below repeats
+      Valve's own selector with the theme color for the same role, so when a name
+      changes the rule simply stops matching and that part falls back to Valve's navy,
+      which stays readable. Background and text of one element sit in one rule so
+      they stop matching together.
+      Generated 2026-11-27 from the rules that matched on /wishlist,
+      /personalcalendar and the front page: neutral colors mapped by lightness (page ground, card,
+      raised tile; title, body, quiet text; hairline), colored fills left alone. */
+
+/* ========== 1. Design-system tokens ==========
+   Steps 1-9 are fills (page, cards, controls, hover), 10-12 text, as in Valve's scale.
+   Built from the theme's page and text colors, so they follow light and dark. */
+
+:root:root {
+    --color-greyneutral-1: var(--mr-bg);
+    --color-greyneutral-2: color-mix(in oklab, var(--mr-text) 3%, var(--mr-bg));
+    --color-greyneutral-3: color-mix(in oklab, var(--mr-text) 4%, var(--mr-bg));
+    --color-greyneutral-4: color-mix(in oklab, var(--mr-text) 5%, var(--mr-bg));
+    --color-greyneutral-5: color-mix(in oklab, var(--mr-text) 6%, var(--mr-bg));
+    --color-greyneutral-6: color-mix(in oklab, var(--mr-text) 8%, var(--mr-bg));
+    --color-greyneutral-7: color-mix(in oklab, var(--mr-text) 10%, var(--mr-bg));
+    --color-greyneutral-8: color-mix(in oklab, var(--mr-text) 12%, var(--mr-bg));
+    --color-greyneutral-9: color-mix(in oklab, var(--mr-text) 18%, var(--mr-bg));
+    --color-greyneutral-10: color-mix(in oklab, var(--mr-text) 40%, var(--mr-bg));
+    --color-greyneutral-11: color-mix(in oklab, var(--mr-text) 60%, var(--mr-bg));
+    --color-greyneutral-12: color-mix(in oklab, var(--mr-text) 80%, var(--mr-bg));
+
+    --color-text-light-title: var(--mr-text);
+    --color-text-light-subtitle: var(--mr-text);
+    --color-text-light-body: var(--mr-muted);
+    --color-text-light-description: var(--mr-muted);
+    --color-text-light-note: var(--mr-subtle);
+
+    --footer-bg-color: var(--mr-rail);
+    --Neutrals-lighterGrey: var(--mr-muted);
+}
+
+/* ========== 2. Page modules ========== */
+
+/* --- Dz-B1WUw.css --- */
+.v3B63V0zBTo- .rGuH1gD4ryg- {
+    background-color: var(--mr-hover) !important;
+}
+
+.WCG-2-OYepA- {
+    background-image: none !important;
+    background-color: var(--mr-surface) !important;
+    color: var(--mr-text) !important;
+}
+
+@media screen and (width <= 730px) {
+    html.responsive .WCG-2-OYepA-
+    {
+        background-color: var(--mr-surface) !important;
+    }
+}
+
+@media screen and (width <= 730px) {
+    html.responsive .x4-PBPanWEY- .WCG-2-OYepA-
+    {
+        background-image: none !important;
+        background-color: var(--mr-bg) !important;
+    }
+}
+
+.WCG-2-OYepA- a:hover {
+    color: var(--mr-text) !important;
+}
+
+a.EYF1OQwj3TE-,
+button.EYF1OQwj3TE- {
+    color: var(--mr-text) !important;
+}
+
+a.EYF1OQwj3TE- .oWSo9BvK7oY-,
+button.EYF1OQwj3TE- .oWSo9BvK7oY- {
+    color: var(--mr-text) !important;
+}
+
+._5fxF1NcznNc- {
+    background-color: var(--mr-input) !important;
+}
+
+.S-0LcpbLAf8- {
+    color: var(--mr-text) !important;
+    border-color: var(--mr-line) !important;
+}
+
+.S-0LcpbLAf8-:hover::placeholder {
+    color: var(--mr-subtle) !important;
+}
+
+.S-0LcpbLAf8-::placeholder {
+    color: var(--mr-subtle) !important;
+}
+
+.S-0LcpbLAf8-:focus-visible {
+    background-color: var(--mr-surface) !important;
+}
+
+.SdFPqnbn0yI- {
+    background-image: none !important;
+    background-color: var(--mr-surface) !important;
+}
+
+.SdFPqnbn0yI- ._7gYaw-JAHLI- .o3-Lb6N8-cY- {
+    color: var(--mr-text) !important;
+}
+
+a.S-0da5Ll-j0- {
+    background-color: var(--mr-hover) !important;
+    color: var(--mr-text) !important;
+}
+
+.t-LlQicBZjE- {
+    background-color: var(--mr-raised) !important;
+}
+
+body.r0DFA3TwTH8- {
+    color: var(--mr-text) !important;
+}
+
+.cO0trRuLfzA- {
+    background-image: none !important;
+    background-color: var(--mr-surface) !important;
+}
+
+.cO0trRuLfzA-:dir(rtl) {
+    background-image: none !important;
+    background-color: var(--mr-surface) !important;
+}
+
+.cO0trRuLfzA- .JImNxATJ1xc- {
+    background-color: var(--mr-hover) !important;
+}
+
+.cO0trRuLfzA- ._6iY2YwtsQR0- .kNeH7jZB5vg- {
+    color: var(--mr-text) !important;
+}
+
+.cO0trRuLfzA- ._6iY2YwtsQR0- .qy5xFmO5xOU- {
+    color: var(--mr-text) !important;
+}
+
+/* --- BTK10mOu.css --- */
+.Y9w82-bhx7g- {
+    color: var(--mr-muted) !important;
+}
+
+._-54SS2-Bx9o- {
+    background-color: var(--mr-bg) !important;
+}
+
+._-54SS2-Bx9o- .QYFii1vIT5Q- {
+    color: var(--mr-text) !important;
+}
+
+._0uWyQeNM7D8- {
+    background-color: var(--mr-bg) !important;
+    color: var(--mr-text) !important;
+}
+
+/* --- BaGSzaWJ.css --- */
+.-eI1hK-YHzA- {
+    background-color: var(--mr-bg) !important;
+    color: var(--mr-text) !important;
+}
+
+.-eI1hK-YHzA- .MYcXixJRjdQ- .acXrpsrm6SU- .qzIo473CVnk- {
+    color: var(--mr-text) !important;
+}
+
+.-eI1hK-YHzA- .MYcXixJRjdQ- .acXrpsrm6SU- .w3jcCRb69Us- {
+    color: var(--mr-text) !important;
+}
+
+.-eI1hK-YHzA- .MYcXixJRjdQ- .ag682w7MuHY- {
+    background-color: var(--mr-surface) !important;
+}
+
+.-eI1hK-YHzA- .MYcXixJRjdQ- .ag682w7MuHY- .u-4NX5LxvFE- {
+    color: var(--mr-text) !important;
+}
+
+.mNU4nhHun4w- .xvzntqGsFoI- .sn49wJzspcE- {
+    color: var(--mr-text) !important;
+}
+
+.mNU4nhHun4w- .uAYuL5yu4SA- .sn49wJzspcE- {
+    color: var(--mr-text) !important;
+}
+
+.zc6E7zYwMVQ- {
+    background-color: var(--mr-raised) !important;
+}
+
+._8uC79VyVamM- .qA0LEadDOd0- {
+    color: var(--mr-text) !important;
+    border-color: var(--mr-line) !important;
+}
+
+._28cZ-v6-FrA- .I-lPHTBrBLo- {
+    color: var(--mr-text) !important;
+}
+
+._28cZ-v6-FrA- .AmfmvR7-ltk- {
+    background-color: var(--mr-bg) !important;
+}
+
+.cHfjNx33dD8- .u7nwyvcOBLQ- {
+    border-color: var(--mr-line) !important;
+}
+
+.NCPaSb4YV1I- {
+    background-color: var(--mr-bg) !important;
+}
+
+.NCPaSb4YV1I-.JYobaVyh158- {
+    background-color: var(--mr-raised) !important;
+}
+
+.NCPaSb4YV1I- .TUgCewSfXl0- {
+    background-image: none !important;
+    background-color: var(--mr-bg) !important;
+}
+
+/* --- B95xLloG.css --- */
+.Cj7J5QHbL-0- {
+    background-color: var(--mr-raised) !important;
+}
+
+.Cj7J5QHbL-0-._1061-T-Ospo-:not(.jipuO2-HQM8-):not(.fBfwk506BOk-) {
+    background-color: var(--mr-bg) !important;
+}
+
+/* --- CYyfhX8N.css --- */
+.cFn3BDbAK-g- {
+    border-color: var(--mr-line) !important;
+}
+
+/* --- uBzt30JS.css --- */
+.LrqeL6o22aQ-:hover,
+.at-NoHOQJvQ-:hover,
+.oS2hPC3gY6k-:hover {
+    color: var(--mr-text) !important;
+}
+
+.LrqeL6o22aQ-:disabled,
+.LrqeL6o22aQ-:disabled:hover,
+.at-NoHOQJvQ-:disabled,
+.at-NoHOQJvQ-:disabled:hover,
+.oS2hPC3gY6k-:disabled,
+.oS2hPC3gY6k-:disabled:hover {
+    color: var(--mr-subtle) !important;
+}
+
+.LrqeL6o22aQ-:disabled > span,
+.at-NoHOQJvQ-:disabled > span,
+.oS2hPC3gY6k-:disabled > span {
+    background-color: var(--mr-hover) !important;
+}
+
+/* --- WO2NAj9P.css --- */
+.JmLh4Njn6Xg- {
+    color: var(--mr-muted) !important;
+}
+
+.Vy3rNuKLunU- {
+    border-color: var(--mr-line) !important;
+}
+
+.Vy3rNuKLunU-:hover,
+.Vy3rNuKLunU-.Nd9ijC9o-tY- {
+    background-color: var(--mr-raised) !important;
+}
+
+/* --- D35A8Zzn.css --- */
+.IShbIXSFzbI- label,
+.IShbIXSFzbI- input {
+    color: var(--mr-text) !important;
+}
+
+.DFhzzTUhoEs- .QoJP0e0vzFA- {
+    background-color: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+    border-color: var(--mr-line) !important;
+}
+
+.PzuczM6OUSY- {
+    background-color: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+}
+
+.PzuczM6OUSY-.F9tP8SC7J-o- svg {
+    color: var(--mr-text) !important;
+}
+
+.JAybs32rLv4- {
+    color: var(--mr-text) !important;
+}
+
+._8SeGvT1Jess- button {
+    color: var(--mr-text) !important;
+}
+
+.Of41uRacYLU- .BKhk6CZ5ib0- {
+    color: var(--mr-muted) !important;
+}
+
+.PE-3oq-yIvg- {
+    background-image: none !important;
+    background-color: var(--mr-surface) !important;
+    color: var(--mr-muted) !important;
+    border-color: var(--mr-line) !important;
+}
+
+.PE-3oq-yIvg- .I8vuMMV-osE- {
+    color: var(--mr-text) !important;
+}
+
+.uQ8Li0MwEhQ- .Q6G2tkjGQKw- {
+    color: var(--mr-text) !important;
+}
+
+._6QzykeEsckc- {
+    background-color: var(--mr-hover) !important;
+}
+
+.U3ndjc3qoW8-:hover {
+    background-color: var(--mr-raised) !important;
+}
+
+._7RIfZsoAbnY- button.p0Gsr94HawQ- {
+    background-color: var(--mr-hover) !important;
+    color: var(--mr-muted) !important;
+}
+
+.E0AZ1CRvqNk- .Ndh5LdeIG9s- > input {
+    background-color: var(--mr-hover) !important;
+    color: var(--mr-text) !important;
+}
+
+._0uIJq8Pia8Q- {
+    color: var(--mr-muted) !important;
+}
+
+.KFyvA5BJClc- h2 {
+    color: var(--mr-text) !important;
+}
+
+/* --- C6L1nUf2.css --- */
+.ModalOverlayBackground {
+    background-color: var(--mr-scrim) !important;
+}
+
+/* --- chunk~70cbcbc9c7.css --- */
+._--jO3lLROzo- {
+    background-color: var(--mr-hover) !important;
+}
+
+.bKYQmUBfOtY- {
+    background-color: var(--mr-hover) !important;
+}
+
+/* --- chunk~3eceeebbf4.css --- */
+.nHdn-Ea4zSg- .IdjQXo6E9yc- {
+    color: var(--mr-text) !important;
+}
+
+.nHdn-Ea4zSg- .sGDLZ2AYREY- {
+    color: var(--mr-text) !important;
+}
+
+.nHdn-Ea4zSg- .maxz19gKOQc- .CAnATFwmik4- .FeN6na6SvAg- {
+    color: var(--mr-text) !important;
+}
+
+.nHdn-Ea4zSg- .maxz19gKOQc- .CAnATFwmik4- .bLQQ-syFWHg- {
+    color: var(--mr-text) !important;
+}
+
+.nHdn-Ea4zSg- .maxz19gKOQc- .CAnATFwmik4- .lGsGMjZ-9IE- {
+    color: var(--mr-text) !important;
+}
+
+/* --- chunk~bc10934db3.css --- */
+.fUnUYx6wf8w- {
+    color: var(--mr-text) !important;
+}
+
+/* --- chunk~eabb00f56a.css --- */
+.WYXlhoxwBlU- .Ypf4QLCxqQU- {
+    background-image: none !important;
+    background-color: var(--mr-surface) !important;
+}
+
+/* --- chunk~b3cb27b5e1.css --- */
+.FsYxDNcAXaI- {
+    background-color: var(--mr-bg) !important;
+}
+
+.xKMeNFV4-6I-:hover {
+    color: var(--mr-text) !important;
+}
+
+/* --- chunk~ec2a077c3e.css --- */
+.txCSzBxQT1Q- {
+    color: var(--mr-text) !important;
+}
+
+._3eoksPgeP-E-._3eoksPgeP-E- .SaleSectionHeader {
+    color: var(--mr-text) !important;
+}
+
+.I5xcEcLqHQE- {
+    color: var(--mr-text) !important;
+}
+
+.I5xcEcLqHQE-.OahpVA-2mkI- .nL4oSzmS8Ds- {
+    background-color: var(--mr-bg) !important;
+}
+
+.baOqlTJHsx8-.baOqlTJHsx8-.baOqlTJHsx8- {
+    background-color: var(--mr-hover) !important;
+    color: var(--mr-text) !important;
+}
+
+
+/* ========== 3. By hand ========== */
+
+/* Top bar on these pages: the theme's chrome color with a hairline, like the bar on
+   the classic Store pages (webkit.css section 2) */
+.WCG-2-OYepA- {
+    border-bottom: 1px solid var(--mr-line);
+    background-color: var(--mr-rail) !important;
+    box-shadow: none !important;
+}
+
+/* Valve's design-system controls (text fields, pickers, segmented buttons) take their
+   fill from the grey scale above but set literal light text colors, so on the light
+   fills the text vanished. Each control kind gets the theme's text colors. */
+:is(.Fn08FaIrTv4-, .uvMq4Z5tbyE-, .UQqUC6sKvjE-, ._2Mm-osVPrVw-, .PgQLUbneMyk-) {
+    --text-color: var(--mr-text) !important;
+    --text-muted-color: var(--mr-muted) !important;
+}
+
+.uvMq4Z5tbyE- {
+    --bg-color: var(--mr-raised) !important;
+    --bg-highlight-color: var(--mr-active) !important;
+}
+
+/* Segmented buttons ("10 25 50 100", "Show Hide Only"): the selected one sits on
+   a sliding highlight, in the theme's accent */
+.EVNlC9c2y-U- {
+    background-color: var(--mr-a) !important;
+}
+
+.L5RG2a-Ajh8-[data-selected="true"] {
+    color: var(--mr-on-a) !important;
+}
+
+/* Wishlist share button: its icon is filled white */
+.PzuczM6OUSY- svg {
+    fill: currentColor !important;
+}
+
+/* Price blocks (wishlist rows and capsules): Valve sets the price colors as variables
+   on the block, white and pale blue. The .fBfwk506BOk- kind sits on a dark overlay
+   over cover art, so it keeps them. */
+.Cj7J5QHbL-0-:not(.fBfwk506BOk-) {
+    --final-price-color: var(--mr-text) !important;
+    --original-price-color: var(--mr-subtle) !important;
+}
+
+/* Cart: the one filled button in the bar. Its label rule above also matches the plain
+   links, so the id and the address make this one win. */
+#StoreTemplate a[href*="/cart"] {
+    border-radius: var(--mr-radius-lg) !important;
+    background: var(--mr-a) !important;
+    color: var(--mr-on-a) !important;
+}
+
+#StoreTemplate a[href*="/cart"] * {
+    color: inherit !important;
+    fill: currentColor;
+}

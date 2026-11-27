@@ -89,6 +89,7 @@ Light mode covers the main window, menus, dialogs, the friends and chat windows,
 | `libraryroot.custom.js` | Adds the Library and Downloads headings, your avatar and the Downloads item in the navigation, and the Ctrl+K search shortcut. Opens the Store / Library / Community / profile menus on right-click instead of on hover |
 | `friends.custom.css` | Friends list and chat windows |
 | `webkit.css` | Store and Community web pages |
+| `store-react.css` | Valve's newer Store pages (wishlist, personal calendar): its design-system greys mapped to the theme, and overrides for the navy those pages hard-code. Imported by `webkit.css` |
 | `bigpicture.custom.css` | Big Picture mode, Quick Access and the Steam menu |
 | `accents/*.css` | One file per accent color |
 | `modes/light.css` | The light palette: only the color variables change (loaded when **Appearance** is **Light**) |

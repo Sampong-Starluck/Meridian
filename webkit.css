@@ -7,6 +7,7 @@
    to the theme colors so they also read in light mode. */
 
 @import url("tokens.css");
+@import url("store-react.css");
 
 /* Steam's newer Store sections have scrambled class names, but they take their greys
    from these shared variables. Pointing the two blue-grey ramps at the theme's neutrals
@@ -564,6 +565,17 @@ body::-webkit-scrollbar-thumb:hover {
 .see_more_link span,
 .see_more_link div {
     color: var(--mr-a) !important;
+}
+
+/* Sections that load later on the front page */
+#discounts_and_events_title,
+.SaleSectionHeader,
+.SaleSectionHeader > div {
+    color: var(--mr-text) !important;
+}
+
+.store_main_capsule .release_date {
+    color: var(--mr-muted) !important;
 }
 
 /* Tag chips on the recommendation capsules */
