@@ -211,3 +211,143 @@ button.DialogButton.GreenPlay.gpfocus {
     background: var(--mr-raised) !important;
     box-shadow: inset 3px 0 0 var(--mr-a) !important;
 }
+
+/* ========== 5. Shared pieces ========== */
+
+/* Sentence case instead of ALL CAPS: playtime lines, button hints, stat labels, dates */
+.SubMessage,
+.ActionButtonLabel,
+.PlayBarLabel,
+.AppActivityDate,
+.CollectionLabel {
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+/* "New" dot on a tab: Steam blue by default */
+.TabRowTabs .Tab .TabDotBadge {
+    background: var(--mr-a) !important;
+}
+
+.TabRowTabs .Tab.Selected .TabDotBadge {
+    background: var(--mr-on-a) !important;
+}
+
+/* Page grounds: Library and Settings carry Steam's navy radial gradient */
+.GamepadLibrary,
+.GamepadPage.DialogBackground {
+    background: var(--mr-bg) !important;
+}
+
+/* ========== 6. Home and Library ========== */
+
+/* The wide "last played" tile: its artwork is a separate layer, so it needs its own corners */
+.LibraryItemBox.Landscape,
+.LibraryItemBox.Landscape .LandscapeImage,
+.LibraryItemBox.Landscape img {
+    border-radius: var(--mr-radius-xl) !important;
+}
+
+/* What's New cards: image and text read as one rounded card */
+.EventCarousel .EventImageWrapper {
+    border-radius: var(--mr-radius-xl) var(--mr-radius-xl) 0 0;
+    overflow: hidden;
+}
+
+.EventCarousel .EventInfo {
+    border-radius: 0 0 var(--mr-radius-xl) var(--mr-radius-xl);
+}
+
+/* Collection tiles */
+.Collection {
+    border-radius: var(--mr-radius-xl) !important;
+    background: var(--mr-surface) !important;
+    overflow: hidden;
+}
+
+.Collection.gpfocus {
+    box-shadow: 0 0 0 3px var(--mr-a) !important;
+}
+
+/* ========== 7. Game page ========== */
+
+/* Flat ground instead of the grey glass gradient */
+.AppDetailsMain .Body.ScrollContainer.Glassy {
+    background: var(--mr-bg) !important;
+}
+
+.AppDetailsRoot {
+    background: transparent !important;
+}
+
+/* Play / Install: the theme accent, not Steam green */
+.PlayButtonContainer {
+    border-radius: var(--mr-radius-xl) !important;
+    overflow: hidden;
+}
+
+.PlayButtonContainer .PlayButton {
+    border-radius: var(--mr-radius-xl) !important;
+}
+
+.PlayButtonContainer.Green .PlayButton {
+    background: var(--mr-a) !important;
+    color: var(--mr-on-a) !important;
+    font-weight: 600;
+}
+
+.PlayButtonContainer.Green .PlayButton svg {
+    fill: currentColor;
+}
+
+/* Controller and gear buttons beside it */
+.AppButtons .MenuButton {
+    border-radius: var(--mr-radius-xl) !important;
+    background: var(--mr-raised) !important;
+}
+
+.AppButtons .MenuButton.gpfocus,
+.AppButtons .MenuButton:hover {
+    background: var(--mr-raised-hover) !important;
+}
+
+/* "Say something about this game" box */
+.PostTextEntryArea {
+    border: 1px solid var(--mr-line-strong) !important;
+    border-radius: var(--mr-radius-xl) !important;
+    background: var(--mr-input) !important;
+    box-shadow: none !important;
+}
+
+/* Friend names in the activity feed (Steam: light blue) */
+.AppActivityDay .playerName {
+    color: var(--color-accent-11) !important;
+}
+
+/* ========== 8. Settings ========== */
+
+.PagedSettingsDialog {
+    background: var(--mr-bg) !important;
+}
+
+.PagedSettingsDialog .PageListColumn {
+    background: var(--mr-rail) !important;
+}
+
+/* The page you are on: a filled row with the accent bar, like the desktop sidebar */
+.PagedSettingsDialog .PageListColumn .Active {
+    background: var(--mr-active) !important;
+    border-color: var(--mr-a) !important;
+}
+
+/* One setting per rounded row */
+.Field.Background {
+    border-radius: var(--mr-radius-xl) !important;
+    background: var(--mr-surface) !important;
+}
+
+/* ========== 9. Steam menu ========== */
+
+.BasicUI > .Menu .Item.Active {
+    background: var(--mr-active) !important;
+}
