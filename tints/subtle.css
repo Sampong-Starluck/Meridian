@@ -1,0 +1,8 @@
+/* Meridian · Surface tint "Subtle"
+   Gives the backgrounds a hint of the accent color, in dark and light mode alike.
+   tokens.css and modes/*.css add chroma to each surface by --mr-tint and turn its hue
+   to --mr-tint-hue (each accent file sets --mr-hue). */
+:root {
+    --mr-tint: 1;
+    --mr-tint-hue: var(--mr-hue, 285.8);
+}

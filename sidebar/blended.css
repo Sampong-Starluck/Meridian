@@ -8,9 +8,8 @@
 
 /* Library and game pages: the content frame gives up its own panel edge... */
 .OuterFrame > .ContentFrame:has(> .LocalContentContainer > .Container > .LeftListSizableContainer) {
-    border-top-color: transparent;
-    border-left-color: transparent;
-    border-top-left-radius: 0;
+    border-color: transparent;
+    border-radius: 0;
     background: var(--mr-rail) !important;
 }
 
@@ -31,9 +30,8 @@
 /* ...and the page beside the list becomes the panel */
 .OuterFrame .LocalContentContainer .LibraryWindowDivider + .MainPanel {
     box-sizing: border-box;
-    border-top: 1px solid var(--mr-line);
-    border-left: 1px solid var(--mr-line);
-    border-top-left-radius: var(--mr-radius-xl);
+    border: var(--mr-edge-w) solid var(--mr-edge);
+    border-radius: var(--mr-radius-xl);
     background: var(--mr-bg);
     overflow: hidden;
 }

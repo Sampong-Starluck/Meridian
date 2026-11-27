@@ -1,0 +1,43 @@
+/* Meridian · keep dark
+   Imported by bigpicture.custom.css (Big Picture is made for a TV across the room) and
+   webkit.css (Store and Community pages: Valve writes hundreds of colors straight into
+   them, tuned for a dark page). Both stay dark whatever the Appearance option says.
+
+   modes/light.css sets its tokens on :root:root; three :roots outrank it and put the
+   dark values from tokens.css back. Keep these in step with tokens.css. */
+
+:root:root:root {
+    color-scheme: normal;
+    --mr-scheme: dark;
+    --mr-rail: oklch(0.141 calc(0.005 + 0.012 * var(--mr-tint, 0)) var(--mr-tint-hue, 285.823));
+    --mr-bg: oklch(0.178 calc(0.006 + 0.014 * var(--mr-tint, 0)) var(--mr-tint-hue, 285.85));
+    --mr-surface: oklch(0.21 calc(0.006 + 0.016 * var(--mr-tint, 0)) var(--mr-tint-hue, 285.885));
+    --mr-raised: oklch(0.274 calc(0.006 + 0.018 * var(--mr-tint, 0)) var(--mr-tint-hue, 286.033));
+    --mr-raised-hover: oklch(0.37 calc(0.013 + 0.02 * var(--mr-tint, 0)) var(--mr-tint-hue, 285.805));
+    --mr-hover: oklch(1 0 0 / 0.06);
+    --mr-active: oklch(1 0 0 / 0.1);
+    --mr-input: oklch(1 0 0 / 0.05);
+    --mr-line: oklch(1 0 0 / 0.08);
+    --mr-line-strong: oklch(1 0 0 / 0.14);
+    --mr-line-hover: oklch(1 0 0 / 0.24);
+    --mr-cover-ring: oklch(1 0 0 / 0.1);
+    --mr-edge: oklch(1 0 0 / 0.2);
+    --mr-frame: rgb(0 0 0);
+    --mr-scrim: rgb(0 0 0 / 0.6);
+    --mr-text: var(--mr-zinc-100);
+    --mr-muted: var(--mr-zinc-400);
+    --mr-subtle: var(--mr-zinc-500);
+    --mr-ok: oklch(0.765 0.177 163.223);
+    --mr-danger: oklch(0.637 0.237 25.331);
+    --mr-a: var(--mr-accent, oklch(0.707 0.165 254.624));
+    --mr-on-a: var(--mr-zinc-950);
+    --mr-a-soft: color-mix(in oklab, var(--mr-a) 14%, transparent);
+    --mr-a-ring: color-mix(in oklab, var(--mr-a) 32%, transparent);
+    --mr-ok-soft: color-mix(in oklab, var(--mr-ok) 14%, transparent);
+    --mr-ok-ring: color-mix(in oklab, var(--mr-ok) 30%, transparent);
+    --mr-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --mr-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+    --mr-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+    --mr-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.7);
+    --mr-highlight: inset 0 1px 0 0 oklch(1 0 0 / 0.05);
+}

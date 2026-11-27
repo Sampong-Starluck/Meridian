@@ -17,6 +17,16 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+/* The friends and chat windows have no edge of their own: a one-pixel frame on top */
+html::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    border: 1px solid var(--mr-edge);
+    pointer-events: none;
+}
+
 ::selection {
     background: var(--mr-a);
     color: var(--mr-on-a);
@@ -44,7 +54,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: oklch(1 0 0 / 0.28);
+    background-color: var(--mr-line-hover);
 }
 
 .DialogButton {
@@ -162,7 +172,7 @@ input[type="search"]:focus {
 }
 
 .quickAccessFriends .dropTargetBox {
-    border: 1px dashed oklch(1 0 0 / 0.2) !important;
+    border: 1px dashed var(--mr-line-hover) !important;
     border-radius: var(--mr-radius-lg);
 }
 
@@ -258,6 +268,11 @@ input[type="search"]:focus {
 
 .ChatRoomList a {
     color: var(--mr-a) !important;
+}
+
+/* "Any group chats you are part of..." when there are none: Steam's faint teal */
+.ChatRoomList > div:not([class]) {
+    color: var(--mr-subtle) !important;
 }
 
 /* "Online friends", "Offline" and other group headers */

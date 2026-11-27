@@ -8,6 +8,9 @@
 
 @import url("tokens.css");
 
+/* Big Picture stays dark with every Appearance choice (see modes/dark.css) */
+@import url("modes/dark.css");
+
 /* ========== 1. Shared color scales ========== */
 
 :root,

@@ -1,29 +1,63 @@
 /* Meridian · Store and Community pages inside Steam
    (any *.steampowered.com or steamcommunity.com page)
    These pages use long-lived class names, so nothing needs mapping.
-   Colors, radii and fonts come from tokens.css. */
+   Colors, radii and fonts come from tokens.css, so the pages follow the Appearance
+   (dark / light) and Surface tint options like the rest of Steam. Valve writes many
+   colors straight into these pages, tuned for dark; section 4 maps the common ones
+   to the theme colors so they also read in light mode. */
 
 @import url("tokens.css");
 
 /* Steam's newer Store sections have scrambled class names, but they take their greys
    from these shared variables. Pointing the two blue-grey ramps at the theme's neutrals
-   restyles those sections without naming them. */
+   restyles those sections without naming them. Each step maps to a theme role
+   ("lightest" is text, "darkest" is the ground), so the ramp flips in light mode. */
 :root {
-    --gpSystemLightestGrey: var(--mr-zinc-200);
-    --gpSystemLighterGrey: var(--mr-zinc-300);
-    --gpSystemLightGrey: var(--mr-zinc-400);
-    --gpSystemGrey: var(--mr-zinc-500);
-    --gpSystemDarkGrey: var(--mr-zinc-700);
-    --gpSystemDarkerGrey: var(--mr-zinc-800);
-    --gpSystemDarkestGrey: var(--mr-zinc-950);
+    --gpSystemLightestGrey: var(--mr-text);
+    --gpSystemLighterGrey: color-mix(in oklab, var(--mr-text) 60%, var(--mr-muted));
+    --gpSystemLightGrey: var(--mr-muted);
+    --gpSystemGrey: var(--mr-subtle);
+    --gpSystemDarkGrey: var(--mr-raised-hover);
+    --gpSystemDarkerGrey: var(--mr-raised);
+    --gpSystemDarkestGrey: var(--mr-rail);
 
-    --gpStoreLightestGrey: var(--mr-zinc-200);
-    --gpStoreLighterGrey: var(--mr-zinc-300);
-    --gpStoreLightGrey: var(--mr-zinc-400);
-    --gpStoreGrey: var(--mr-zinc-600);
-    --gpStoreDarkGrey: var(--mr-zinc-800);
-    --gpStoreDarkerGrey: var(--mr-zinc-900);
-    --gpStoreDarkestGrey: var(--mr-zinc-950);
+    --gpStoreLightestGrey: var(--mr-text);
+    --gpStoreLighterGrey: color-mix(in oklab, var(--mr-text) 60%, var(--mr-muted));
+    --gpStoreLightGrey: var(--mr-muted);
+    --gpStoreGrey: var(--mr-subtle);
+    --gpStoreDarkGrey: var(--mr-raised);
+    --gpStoreDarkerGrey: var(--mr-surface);
+    --gpStoreDarkestGrey: var(--mr-rail);
+}
+
+/* The page edge. Inside the main window these pages sit where the Library's page card
+   goes, with the window chrome around them, so they get the same edge and rounded
+   corners. A web view is a square native view, so the corners are drawn here, over
+   the page, and ignored by the mouse. */
+html::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    border: var(--mr-edge-w) solid var(--mr-edge);
+    border-radius: var(--mr-radius-xl);
+    pointer-events: none;
+}
+
+/* Outside the four rounded corners: the window chrome's color */
+html::before {
+    --mr-c: var(--mr-radius-xl);
+    --mr-c-in: calc(var(--mr-c) - 0.5px);
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    background:
+        radial-gradient(circle at 100% 100%, transparent var(--mr-c-in), var(--mr-rail) var(--mr-c)) left top / var(--mr-c) var(--mr-c) no-repeat,
+        radial-gradient(circle at 0 100%, transparent var(--mr-c-in), var(--mr-rail) var(--mr-c)) right top / var(--mr-c) var(--mr-c) no-repeat,
+        radial-gradient(circle at 100% 0, transparent var(--mr-c-in), var(--mr-rail) var(--mr-c)) left bottom / var(--mr-c) var(--mr-c) no-repeat,
+        radial-gradient(circle at 0 0, transparent var(--mr-c-in), var(--mr-rail) var(--mr-c)) right bottom / var(--mr-c) var(--mr-c) no-repeat;
+    pointer-events: none;
 }
 
 /* ========== 1. Shared ========== */
@@ -61,7 +95,38 @@ body,
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: oklch(1 0 0 / 0.28);
+    background-color: var(--mr-line-hover);
+}
+
+/* The page's own scrollbar sits outside the edge drawn above (nothing can paint over
+   it), so it becomes the gutter instead: as wide as the gutter, on the chrome color,
+   and always there so short pages keep the gutter too. The main window lets the web
+   view run into its gutter column to make room (libraryroot.custom.css).
+   Steam's CEF styles the page scrollbar from body's pseudo-elements, not html's
+   (checked live), and the Store sets its own 14px width, hence !important. */
+html {
+    overflow-y: scroll;
+}
+
+body::-webkit-scrollbar {
+    width: var(--mr-gutter) !important;
+    background: var(--mr-rail) !important;
+}
+
+body::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track-piece,
+body::-webkit-scrollbar-corner {
+    background: var(--mr-rail) !important;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: var(--mr-line-strong) padding-box !important;
+    border: 2px solid transparent !important;
+    border-radius: var(--mr-radius-full) !important;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background-color: var(--mr-line-hover) !important;
 }
 
 /* Buttons: one flat primary color on both Store and Community */
@@ -104,6 +169,103 @@ body,
 
 /* ========== 2. Store ========== */
 
+/* Top bar (Browse, Recommendations, ..., search, Wishlist, Cart).
+   Its class names are scrambled and change with Steam updates, so these rules hang off
+   attributes Valve keeps stable: the feature target on the bar's root, the navigation
+   and search roles, and the link addresses. */
+[data-featuretarget^="store-menu"] .Panel:has([role="navigation"]) {
+    border-bottom: 1px solid var(--mr-line);
+    background: var(--mr-rail) !important;
+    box-shadow: none !important;
+}
+
+/* The slate strip Steam fades in under the bar */
+[data-featuretarget^="store-menu"] .Panel:has([role="navigation"]) + div {
+    background: transparent !important;
+}
+
+[data-featuretarget^="store-menu"] [role="navigation"] button,
+[data-featuretarget^="store-menu"] [role="navigation"] a {
+    border-radius: var(--mr-radius-md);
+    color: var(--mr-text) !important;
+    transition: background-color var(--mr-ease);
+}
+
+/* The bar's drop-down menus (Browse, Categories...): links in the text color, the small
+   section headings ("Top Destinations") in the quiet one. Steam writes near-white. */
+[data-featuretarget^="store-menu"] div:not(:has(*)) {
+    color: var(--mr-subtle) !important;
+}
+
+[data-featuretarget^="store-menu"] a,
+[data-featuretarget^="store-menu"] a div {
+    color: var(--mr-text) !important;
+}
+
+[data-featuretarget^="store-menu"] a:not([href*="/cart"]):hover {
+    background: var(--mr-hover) !important;
+}
+
+/* Wishlist count beside its label */
+[data-featuretarget^="store-menu"] a[href*="/wishlist"] span {
+    color: var(--mr-muted) !important;
+}
+
+[data-featuretarget^="store-menu"] [role="navigation"] button:hover,
+[data-featuretarget^="store-menu"] [role="navigation"] a:not([href*="/cart"]):hover {
+    background: var(--mr-hover) !important;
+}
+
+/* Search: an input field, with the button as a quiet icon inside it */
+[data-featuretarget^="store-menu"] form[role="search"] {
+    border-radius: var(--mr-radius-lg);
+    background: var(--mr-input) !important;
+    box-shadow: inset 0 0 0 1px var(--mr-line-strong);
+    overflow: hidden;
+    transition: box-shadow var(--mr-ease);
+}
+
+[data-featuretarget^="store-menu"] form[role="search"]:focus-within {
+    box-shadow: inset 0 0 0 1px var(--mr-a), 0 0 0 3px var(--mr-a-ring);
+}
+
+[data-featuretarget^="store-menu"] form[role="search"] input {
+    color: var(--mr-text) !important;
+    font-family: var(--mr-font) !important;
+    font-style: normal !important;
+}
+
+[data-featuretarget^="store-menu"] form[role="search"] input::placeholder {
+    color: var(--mr-subtle) !important;
+    font-style: normal !important;
+}
+
+[data-featuretarget^="store-menu"] form[role="search"] button[type="submit"] {
+    background: transparent !important;
+    color: var(--mr-muted) !important;
+}
+
+[data-featuretarget^="store-menu"] form[role="search"] button[type="submit"]:hover {
+    color: var(--mr-text) !important;
+}
+
+/* Cart is the one filled button in the bar */
+[data-featuretarget^="store-menu"] a[href*="/cart"] {
+    border-radius: var(--mr-radius-lg) !important;
+    background: var(--mr-a) !important;
+    color: var(--mr-on-a) !important;
+    font-weight: 600;
+}
+
+[data-featuretarget^="store-menu"] a[href*="/cart"] * {
+    color: inherit !important;
+    fill: currentColor;
+}
+
+[data-featuretarget^="store-menu"] a[href*="/cart"]:hover {
+    filter: brightness(1.1);
+}
+
 #store_nav_area .store_nav_bg {
     background: var(--mr-surface) !important;
     border-radius: var(--mr-radius-lg);
@@ -141,6 +303,71 @@ body,
     color: var(--mr-text) !important;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
+}
+
+/* Follow / Ignore / View Your Queue: a card instead of a dark band */
+.queue_ctn {
+    border: 1px solid var(--mr-line);
+    border-radius: var(--mr-radius-xl);
+    background: var(--mr-surface) !important;
+    box-shadow: var(--mr-highlight);
+}
+
+/* The arrow beside Ignore: a secondary button like its neighbors */
+.queue_menu_arrow,
+.queue_menu_arrow > span {
+    border-radius: var(--mr-radius-md) !important;
+    background: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+}
+
+/* "Already in your library": a tinted status strip, not a lime gradient */
+.game_area_already_owned {
+    border: 1px solid var(--mr-ok-ring);
+    border-radius: var(--mr-radius-xl) var(--mr-radius-xl) 0 0;
+    background: var(--mr-ok-soft) !important;
+}
+
+.game_area_already_owned .already_in_library {
+    color: var(--mr-ok) !important;
+    font-family: var(--mr-font) !important;
+    font-size: 15px !important;
+    font-weight: 600;
+}
+
+.ds_owned_flag {
+    border-radius: var(--mr-radius-sm);
+    background-color: var(--mr-ok) !important;
+    color: var(--mr-on-a) !important;
+    font-weight: 600;
+}
+
+/* Playtime and review box under it */
+.game_area_play_stats {
+    border: 1px solid var(--mr-line);
+    border-top: 0;
+    border-radius: 0 0 var(--mr-radius-xl) var(--mr-radius-xl);
+    background: var(--mr-surface) !important;
+}
+
+/* "Play Now" and other light-blue buttons: the accent, like every other primary button */
+.btnv6_lightblue_blue {
+    border-radius: var(--mr-radius-lg) !important;
+    background: var(--mr-a) !important;
+    box-shadow: var(--mr-shadow-xs) !important;
+    overflow: hidden;
+    transition: filter var(--mr-ease);
+}
+
+.btnv6_lightblue_blue > span {
+    background: var(--mr-a) !important;
+    color: var(--mr-on-a) !important;
+    font-weight: 600;
+    box-shadow: inset 0 1px 0 0 oklch(1 0 0 / 0.25);
+}
+
+.btnv6_lightblue_blue:hover {
+    filter: brightness(1.1);
 }
 
 /* Buy box */
@@ -210,7 +437,7 @@ body,
     width: 6px !important;
     height: 6px !important;
     border-radius: var(--mr-radius-full) !important;
-    background: var(--mr-zinc-700) !important;
+    background: var(--mr-raised-hover) !important;
     transition: width var(--mr-ease), background-color var(--mr-ease);
 }
 
@@ -258,6 +485,108 @@ body,
 .tab_item_details,
 .tab_item_top_tags {
     color: var(--mr-muted) !important;
+}
+
+/* Valve's newer markup for the same tabbed lists (seen 2026-11): the tabs are
+   .home_tab_button, the rows .tab_row_item, and the preview beside them .tab_preview.
+   All of it is written in white, which vanished in light mode. */
+.home_tabs_row_ctn .home_tab_button {
+    background: transparent !important;
+}
+
+.home_tabs_row_ctn .home_tab_button .tab_content {
+    background: transparent !important;
+    color: var(--mr-muted) !important;
+    font-weight: 500;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    transition: color var(--mr-ease);
+}
+
+.home_tabs_row_ctn .home_tab_button:hover .tab_content {
+    color: var(--mr-text) !important;
+}
+
+.home_tabs_row_ctn .home_tab_button.active .tab_content {
+    color: var(--mr-text) !important;
+    box-shadow: inset 0 -2px 0 var(--mr-a);
+}
+
+.tab_row_item {
+    border-radius: var(--mr-radius-lg);
+    background: var(--mr-surface) !important;
+    box-shadow: inset 0 0 0 1px var(--mr-line);
+    transition: background-color var(--mr-ease), box-shadow var(--mr-ease);
+}
+
+.tab_row_item:hover,
+.tab_row_item.focus {
+    background: var(--mr-raised) !important;
+    box-shadow: inset 0 0 0 1px var(--mr-line-strong);
+}
+
+.tab_row_item .tab_item_title {
+    color: var(--mr-text) !important;
+    font-weight: 500;
+}
+
+.tab_row_item .tab_item_release_date,
+.tab_row_item .tab_item_tags,
+.tab_row_item .tab_item_tags .top_tag {
+    color: var(--mr-muted) !important;
+}
+
+.tab_preview {
+    border-radius: var(--mr-radius-xl);
+    background: var(--mr-surface) !important;
+    box-shadow: inset 0 0 0 1px var(--mr-line);
+}
+
+.tab_preview .tab_title {
+    color: var(--mr-text) !important;
+}
+
+.tab_preview_details .tags a {
+    border-radius: var(--mr-radius-md) !important;
+    background: var(--mr-hover) !important;
+    color: var(--mr-muted) !important;
+}
+
+/* Section titles on the Store front page ("Recommended Based on the Games You Play",
+   "Because You Played ...", "Browse by Category") and their "See more" links */
+.home_section_title,
+.home_section_title span,
+.home_section_title strong {
+    color: var(--mr-text) !important;
+}
+
+.see_more_link,
+.see_more_link span,
+.see_more_link div {
+    color: var(--mr-a) !important;
+}
+
+/* Tag chips on the recommendation capsules */
+.deep_dive_key_tags .deep_dive_tag {
+    color: var(--mr-muted) !important;
+}
+
+/* Footer: Valve's greys are tuned for its navy */
+#footer h3 {
+    color: var(--mr-text) !important;
+}
+
+#footer,
+#footer p {
+    color: var(--mr-muted) !important;
+}
+
+#footer a {
+    color: var(--mr-muted) !important;
+}
+
+#footer a:hover {
+    color: var(--mr-text) !important;
 }
 
 /* "New & Trending / Top Sellers / Upcoming" tabs: underlined text tabs */
@@ -333,7 +662,7 @@ body,
     border-radius: var(--mr-radius-md) !important;
     background: var(--mr-hover) !important;
     box-shadow: inset 0 0 0 1px var(--mr-line) !important;
-    color: var(--mr-zinc-300) !important;
+    color: var(--mr-muted) !important;
     transition: background-color var(--mr-ease), color var(--mr-ease);
 }
 
@@ -363,6 +692,322 @@ body,
     border-color: var(--mr-a) !important;
     box-shadow: 0 0 0 3px var(--mr-a-ring) !important;
     outline: none !important;
+}
+
+/* ========== 4. Valve's own text colors, mapped to the theme ==========
+   The Store writes its pale blue-greys and link blues into each element. On a dark
+   page they pass; on a light one they vanish. Each gets the theme color for its role,
+   which looks much the same in dark mode and reads in light mode. */
+
+body,
+.responsive_page_template_content,
+.page_content_ctn {
+    color: var(--mr-muted) !important;
+}
+
+/* Headings and names */
+.page_content h1,
+.page_content h2,
+.game_area_purchase_game h1,
+.game_area_description h2,
+.game_area_sys_req h2,
+.game_page_autocollapse h2,
+.block_title,
+.review_create h1,
+.review_create h2,
+.game_area_play_stats h2,
+.apphub_AppName,
+.game_area_description strong,
+.game_area_description b,
+.tab_item_name,
+.store_main_capsule .app_name,
+.home_title,
+.discount_final_price {
+    color: var(--mr-text) !important;
+}
+
+/* Section headings: Steam underlines them with a blue gradient image */
+.game_area_description h2,
+.game_area_sys_req h2,
+.game_page_autocollapse h2,
+.block_title {
+    background-image: none !important;
+    border-bottom: 1px solid var(--mr-line);
+}
+
+/* Body copy */
+.game_area_description,
+.game_area_sys_req,
+.sysreq_contents,
+.game_page_autocollapse,
+.game_description_snippet,
+.review_create p,
+.game_area_play_stats,
+.game_area_play_stats p,
+.details_block,
+.glance_ctn,
+.game_area_details_specs_ctn,
+.game_area_purchase_platform,
+.game_purchase_discount_countdown {
+    color: var(--mr-muted) !important;
+}
+
+/* Breadcrumbs, field labels, dates and counts */
+.breadcrumbs,
+.breadcrumbs a,
+.breadcrumbs .blockbg a,
+.glance_ctn .subtitle,
+.user_reviews .subtitle,
+.game_area_play_stats .hours_played,
+.responsive_reviewdesc,
+.user_reviews_count {
+    color: var(--mr-subtle) !important;
+}
+
+.glance_ctn .date,
+.release_date .date {
+    color: var(--mr-text) !important;
+}
+
+/* Links in the page: the accent instead of Steam's sky blue */
+.glance_ctn a,
+.details_block a,
+.game_area_play_stats a,
+.review_create a,
+.game_area_description a,
+.game_area_details_specs a,
+#demoLearnMoreLink a,
+.game_meta_data a {
+    color: var(--mr-a) !important;
+}
+
+.game_area_details_specs a:hover,
+.glance_ctn a:hover,
+.details_block a:hover {
+    text-decoration: underline;
+}
+
+/* Store home, featured carousel: review count, "Recommended because...", tag chips */
+.store_main_capsule .info span:not(.game_review_summary) {
+    color: var(--mr-muted) !important;
+}
+
+.store_main_capsule .reason strong {
+    color: var(--mr-ok) !important;
+}
+
+.store_main_capsule .tags span {
+    border-radius: var(--mr-radius-md) !important;
+    background: var(--mr-raised) !important;
+    color: var(--mr-muted) !important;
+}
+
+/* Right column on a game page: each block is a card instead of a grey gradient */
+.rightcol .block,
+.rightcol .block.responsive_apppage_details_right,
+.rightcol .block.responsive_apppage_details_left {
+    border: 1px solid var(--mr-line);
+    border-radius: var(--mr-radius-xl);
+    background: var(--mr-surface) !important;
+    box-shadow: var(--mr-highlight);
+}
+
+.rightcol .block.heading,
+.rightcol .block .block_title,
+.rightcol .block h2 {
+    color: var(--mr-text) !important;
+}
+
+.rightcol .block .reason,
+.rightcol .block li span,
+.game_language_options td,
+.game_rating_descriptors,
+.game_rating_agency {
+    color: var(--mr-muted) !important;
+}
+
+/* Feature rows ("Single-player", "Steam Achievements", "Your Xbox Controller") */
+.game_area_details_specs_ctn {
+    border-radius: var(--mr-radius-md) !important;
+    background: var(--mr-raised) !important;
+}
+
+.game_area_details_specs_ctn .label,
+.game_area_details_specs_ctn div:not(.icon) {
+    color: var(--mr-text) !important;
+}
+
+/* The feature icons are white images, so their cell stays dark in both modes */
+.game_area_details_specs_ctn .icon {
+    border-radius: var(--mr-radius-md) 0 0 var(--mr-radius-md);
+    background-color: oklch(0.274 0.006 286.033) !important;
+}
+
+.rightcol summary span,
+.rightcol a span {
+    color: var(--mr-a) !important;
+}
+
+/* "Requires a 3rd-party account / EULA" notes: an amber notice */
+.DRM_notice {
+    border: 1px solid color-mix(in oklab, oklch(0.666 0.179 58.318) 35%, transparent) !important;
+    border-radius: var(--mr-radius-lg);
+    background: color-mix(in oklab, oklch(0.666 0.179 58.318) 12%, transparent) !important;
+    color: var(--mr-text) !important;
+}
+
+/* Price boxes beside Add to Cart: Steam paints them black */
+.game_purchase_action_bg {
+    border-radius: var(--mr-radius-lg);
+    background: var(--mr-raised) !important;
+}
+
+.game_area_purchase_game p b {
+    color: var(--mr-ok) !important;
+}
+
+.game_area_purchase_game p a,
+#demoLearnMoreLink span {
+    color: var(--mr-muted) !important;
+}
+
+.game_area_purchase_game p span a,
+.game_page_autocollapse_readmore {
+    color: var(--mr-a) !important;
+}
+
+/* "Read more" fade at the bottom of a collapsed section: into the page, not navy */
+.game_page_autocollapse_fade {
+    background: linear-gradient(to bottom, transparent, var(--mr-bg)) !important;
+}
+
+/* Review visibility picker ("Public") */
+.controlblock .trigger {
+    border: 1px solid var(--mr-line-strong) !important;
+    border-radius: var(--mr-radius-md);
+    background: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+}
+
+/* Review scores keep their meaning: positive in the accent, mixed in amber, negative in red */
+.game_review_summary.positive {
+    color: var(--mr-a) !important;
+}
+
+.game_review_summary.mixed {
+    color: oklch(0.666 0.179 58.318) !important;   /* amber-600 */
+}
+
+.game_review_summary.negative {
+    color: var(--mr-danger) !important;
+}
+
+/* More of Valve's pale text on game pages (found with a contrast scan in light mode) */
+.franchise_notice .franchise_name,
+.game_area_sys_req strong,
+#game_area_metascore .wordmark,
+#game_area_metascore .metacritic {
+    color: var(--mr-text) !important;
+}
+
+.game_area_purchase_game_dropdown_description,
+.game_area_description li,
+.game_area_description ul,
+.rightcol .block p,
+.game_rating_descriptors p,
+.rightcol .block .Agency,
+.game_language_options th {
+    color: var(--mr-muted) !important;
+}
+
+.game_area_purchase_game_dropdown_description a {
+    color: var(--mr-a) !important;
+}
+
+/* Controller and feature rows in the right column: scrambled class names, so the
+   block's id is the hook. Valve's sky blue and green labels sit on a grey tile. */
+#category_block div {
+    color: var(--mr-text) !important;
+}
+
+/* Review filters ("Filters", "Review Type", "See language breakdown"): also scrambled */
+#app_reviews_hash .Panel.Focusable :is(div, span, button, label):not(.game_review_summary, .DialogButton, .DialogButton *) {
+    color: var(--mr-text) !important;
+}
+
+#app_reviews_hash .Panel.Focusable a {
+    color: var(--mr-a) !important;
+}
+
+/* Newer React pages (wishlist and others) have only scrambled classes; their section
+   headings ("STARLUCK'S WISHLIST") are white h2s under Valve's React root */
+.noOpinionatedGlobalStyles section h2 {
+    color: var(--mr-text) !important;
+}
+
+/* Search page: filter blocks, sort box and result rows */
+#additional_search_options .block_header,
+#additional_search_options .block_header div,
+.tab_filter_control_label {
+    color: var(--mr-text) !important;
+}
+
+.tab_filter_control_count,
+.range_display,
+.search_released,
+.searchbar .sortbox .label {
+    color: var(--mr-muted) !important;
+}
+
+#deck_compat_learn_more_btn,
+#search_manage_lang_preferences_btn a {
+    color: var(--mr-a) !important;
+}
+
+.searchbar .sortbox,
+.search_results_filtered_warning {
+    border-radius: var(--mr-radius-lg);
+    background: var(--mr-surface) !important;
+    box-shadow: inset 0 0 0 1px var(--mr-line);
+    color: var(--mr-muted) !important;
+}
+
+.search_results_filtered_warning div {
+    color: var(--mr-muted) !important;
+}
+
+#sort_by_trigger {
+    border-radius: var(--mr-radius-md);
+    background: var(--mr-raised) !important;
+    color: var(--mr-text) !important;
+}
+
+.search_result_row {
+    border-radius: var(--mr-radius-lg);
+    background: var(--mr-surface) !important;
+    transition: background-color var(--mr-ease);
+}
+
+.search_result_row:hover {
+    background: var(--mr-raised) !important;
+}
+
+.search_result_row .title {
+    color: var(--mr-text) !important;
+}
+
+/* The game's art behind the page header has a dark gradient baked into the image,
+   so in light mode it would leave a dark band; the page ground shows instead */
+@container style(--mr-scheme: light) {
+    .game_page_background {
+        background-image: none !important;
+        background-color: var(--mr-bg) !important;
+    }
+
+    /* Feature and spec rows ("Single-player", "Steam Achievements") are dark tiles */
+    .game_area_details_specs_ctn {
+        background: var(--mr-raised) !important;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

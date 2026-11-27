@@ -67,11 +67,15 @@ Change these in Millennium's theme settings for Meridian.
 
 | Option | Choices | Default |
 | --- | --- | --- |
-| **Navigation** | **Left rail**: the navigation in a sidebar.<br>**Top tabs**: the same items in a row under the title bar, with Steam's hover menus. | Left rail |
+| **Navigation** | **Left rail**: the navigation in a sidebar.<br>**Top tabs**: the same items in a row under the title bar.<br>In both, right-click Store, Library, Community or your profile for its menu. | Left rail |
 | **Library sidebar** | **Side panel**: the game list as its own column inside the page.<br>**Blended**: the game list on the same dark ground as the navigation, with no line between them.<br>**In the rail**: the game list inside the left sidebar, under the navigation items. The sidebar gets a little wider to fit it. Left rail only.<br>**Top bar**: Home, the view picker and search in a row above the page. The game list drops down when you point at the view picker or search, or click into search. | Side panel |
-| **Accent color** | Blue (Tailwind `blue-400`), Mint (`emerald-400`), Amber (`amber-400`), Violet (`violet-400`) | Blue |
+| **Appearance** | **Dark**: zinc surfaces, as before.<br>**Light**: white panels on a light grey frame.<br>**Follow system**: light or dark to match Windows (Settings > Personalization > Colors > *Choose your default app mode*), switching as soon as you change it. | Dark |
+| **Accent color** | Blue (Tailwind `blue-400`), Mint (`emerald-400`), Amber (`amber-400`), Violet (`violet-400`). Light mode uses a darker step of the same color (`blue-600`, `emerald-700`, `amber-700`, `violet-600`) so accent text stays readable on white. | Blue |
+| **Surface tint** | **None**: neutral zinc greys.<br>**Subtle**: the backgrounds take a hint of your accent color.<br>**Strong**: twice as much. Works in dark and light mode. | None |
 
 The accent color is used for Play buttons, progress bars, focus rings and highlights.
+
+Light mode covers the main window, menus, dialogs, the friends and chat windows, and the Store and Community pages. Big Picture stays dark, since it is made for a TV across the room.
 
 ## Files
 
@@ -82,18 +86,23 @@ The accent color is used for Play buttons, progress bars, focus rings and highli
 | `layouts/rail.css` | Where the navigation goes in the left sidebar layout (only when **Navigation** is **Left rail**) |
 | `layouts/tabs.css` | Where the navigation goes in the top row layout, and the game list as a sidebar (only when **Navigation** is **Top tabs**) |
 | `sidebar/blended.css`, `sidebar/in-rail.css`, `sidebar/top-bar.css` | Where the Library's game list goes (one of them is loaded when **Library sidebar** is not **Side panel**) |
-| `libraryroot.custom.js` | Adds the Library and Downloads headings, your avatar and the Downloads item in the navigation, and the Ctrl+K search shortcut. In the sidebar layout, stops Store / Library / Community opening a menu on hover |
+| `libraryroot.custom.js` | Adds the Library and Downloads headings, your avatar and the Downloads item in the navigation, and the Ctrl+K search shortcut. Opens the Store / Library / Community / profile menus on right-click instead of on hover |
 | `friends.custom.css` | Friends list and chat windows |
 | `webkit.css` | Store and Community web pages |
 | `bigpicture.custom.css` | Big Picture mode, Quick Access and the Steam menu |
 | `accents/*.css` | One file per accent color |
+| `modes/light.css` | The light palette: only the color variables change (loaded when **Appearance** is **Light**) |
+| `modes/system.css` | Loads `modes/light.css` while Windows is set to light (when **Appearance** is **Follow system**) |
+| `modes/dark.css` | Puts the dark colors back for Big Picture, which stays dark in light mode |
+| `tints/subtle.css`, `tints/strong.css` | Tint the backgrounds with the accent color (loaded when **Surface tint** is not **None**) |
 
 To change the look, edit `tokens.css`. Each variable has a comment naming the Tailwind utility it stands in for, for example `--mr-radius-lg` is `rounded-lg` and `--mr-line` is `border-white/10`.
 
 ## Notes
 
 - **Steam updates:** Meridian targets Steam's readable class names (for example `TopBar` or `PlayBar`), not the auto-generated ones, so it usually survives Steam updates. If something looks off after an update, please open an issue.
-- **Store header:** Steam's newer Store header uses auto-generated class names that change often, so Meridian leaves it as is.
+- **Store header:** Steam's newer Store header uses auto-generated class names that change often, so Meridian styles it through attributes Valve keeps stable (the bar's feature target, the navigation and search roles, the cart link) instead. The discount badges on the Store home's sale tiles have no such hook and keep Steam's green.
+- **Changing Appearance or Surface tint:** the main window, menus and friends windows switch at once. Store and Community pages switch after you restart Steam, because Millennium decides at startup which option stylesheets web pages get.
 - **Reduced motion:** with reduced motion turned on in Windows, the theme switches off its transitions.
 
 ## Limitations

@@ -16,9 +16,8 @@
 /* ========== 1. Frame: the row is chrome, the page under it is the panel ========== */
 
 .OuterFrame > .ContentFrame:has(> .LocalContentContainer > .Container > .LeftListSizableContainer) {
-    border-top-color: transparent;
-    border-left-color: transparent;
-    border-top-left-radius: 0;
+    border-color: transparent;
+    border-radius: 0;
     background: var(--mr-rail) !important;
 }
 
@@ -50,19 +49,10 @@
 .OuterFrame .LocalContentContainer .LibraryWindowDivider + .MainPanel {
     box-sizing: border-box;
     min-height: 0;
-    border-top: 1px solid var(--mr-line);
-    border-left: 0;
-    border-top-left-radius: 0;
+    border: var(--mr-edge-w) solid var(--mr-edge);
+    border-radius: var(--mr-radius-xl);
     background: var(--mr-bg);
     overflow: hidden;
-}
-
-/* Left rail: the page keeps its rounded corner next to the rail */
-@container style(--mr-layout: rail) {
-    .OuterFrame .LocalContentContainer .LibraryWindowDivider + .MainPanel {
-        border-left: 1px solid var(--mr-line);
-        border-top-left-radius: var(--mr-radius-xl);
-    }
 }
 
 /* ========== 2. The row ==========

@@ -1,10 +1,11 @@
 {
     "name": "Meridian",
-    "description": "Calm, modern dark theme with a web-app feel: neutral surfaces, hairline borders, one accent color, clearer hierarchy.",
-    "version": "1.3.2",
+    "description": "Calm, modern theme with a web-app feel, in dark, light or following Windows: neutral or accent-tinted surfaces, hairline borders, one accent color, clearer hierarchy.",
+    "version": "1.4.0",
     "author": "Starluck",
     "tags": [
         "Dark",
+        "Light",
         "Minimal",
         "Modern"
     ],
@@ -16,7 +17,7 @@
     "UseDefaultPatches": true,
     "Conditions": {
         "Navigation": {
-            "description": "Left rail puts Library, Store, Community and your profile in a sidebar, with the page as a panel beside it. Top tabs puts the same items in a row under the title bar and keeps Steam's hover menus.",
+            "description": "Left rail puts Library, Store, Community and your profile in a sidebar, with the page as a panel beside it. Top tabs puts the same items in a row under the title bar. In both, right-click an item for its menu.",
             "tab": "Layout",
             "default": "Left rail",
             "values": {
@@ -66,6 +67,54 @@
                             "^Steam$"
                         ],
                         "src": "sidebar/top-bar.css"
+                    }
+                }
+            }
+        },
+        "Appearance": {
+            "description": "Dark, Light, or Follow system to match Windows (Settings > Personalization > Colors > app mode). Big Picture stays dark.",
+            "tab": "Theme",
+            "default": "Dark",
+            "values": {
+                "Dark": {},
+                "Light": {
+                    "TargetCss": {
+                        "affects": [
+                            ".*"
+                        ],
+                        "src": "modes/light.css"
+                    }
+                },
+                "Follow system": {
+                    "TargetCss": {
+                        "affects": [
+                            ".*"
+                        ],
+                        "src": "modes/system.css"
+                    }
+                }
+            }
+        },
+        "Surface tint": {
+            "description": "Tints the backgrounds with your accent color, in dark and light mode. None keeps the neutral zinc greys.",
+            "tab": "Theme",
+            "default": "None",
+            "values": {
+                "None": {},
+                "Subtle": {
+                    "TargetCss": {
+                        "affects": [
+                            ".*"
+                        ],
+                        "src": "tints/subtle.css"
+                    }
+                },
+                "Strong": {
+                    "TargetCss": {
+                        "affects": [
+                            ".*"
+                        ],
+                        "src": "tints/strong.css"
                     }
                 }
             }

@@ -1,0 +1,59 @@
+/* Meridian · light mode
+   Loaded by the Appearance option: always for "Light", and through modes/system.css
+   while Windows is set to light for "Follow system".
+
+   Only the semantic tokens change; every stylesheet reads those, so nothing else
+   needs a light copy. The selector is :root:root because every theme stylesheet
+   imports tokens.css again after this file loads, and the doubled :root outranks it.
+   Values follow Tailwind CSS v4's light defaults: white panels on zinc-100 chrome,
+   zinc-950 tints for hover and hairlines, and the darker accent steps so accent text
+   keeps at least 4.5:1 contrast on white. */
+
+:root:root {
+    color-scheme: light;
+    --mr-scheme: light;   /* for the few rules that differ by mode: @container style(--mr-scheme: light) */
+
+    /* ---- Surfaces ---- */
+    /* With Surface tint, each gains chroma in the accent's hue (see tokens.css) */
+    --mr-rail: oklch(calc(0.967 - 0.004 * var(--mr-tint, 0)) calc(0.001 + 0.016 * var(--mr-tint, 0)) var(--mr-tint-hue, 286.375));   /* zinc-100: title bar and sidebar */
+    --mr-bg: oklch(calc(1 - 0.005 * var(--mr-tint, 0)) calc(0.007 * var(--mr-tint, 0)) var(--mr-tint-hue, 0));                         /* the content panel: white */
+    --mr-surface: oklch(calc(1 - 0.003 * var(--mr-tint, 0)) calc(0.005 * var(--mr-tint, 0)) var(--mr-tint-hue, 0));                    /* cards, menus, dialogs: white, set off by a hairline and shadow */
+    --mr-raised: oklch(calc(0.967 - 0.004 * var(--mr-tint, 0)) calc(0.001 + 0.016 * var(--mr-tint, 0)) var(--mr-tint-hue, 286.375)); /* zinc-100: secondary buttons */
+    --mr-raised-hover: oklch(0.92 calc(0.004 + 0.018 * var(--mr-tint, 0)) var(--mr-tint-hue, 286.32));                                  /* zinc-200 */
+
+    /* Overlays: zinc-950 tints instead of white ones */
+    --mr-hover: oklch(0.141 0.005 285.823 / 0.07);   /* hover:bg-zinc-950/5, a step up so it shows on white */
+    --mr-active: oklch(0.141 0.005 285.823 / 0.11);  /* bg-zinc-950/10: the selected row */
+    --mr-input: oklch(1 0 0);                        /* bg-white: text fields and selects */
+
+    --mr-line: oklch(0.141 0.005 285.823 / 0.1);         /* border-zinc-950/10 */
+    --mr-line-strong: oklch(0.141 0.005 285.823 / 0.16); /* border-zinc-950/15: controls */
+    --mr-line-hover: oklch(0.141 0.005 285.823 / 0.28);
+    --mr-cover-ring: oklch(0.141 0.005 285.823 / 0.1);
+    --mr-edge: oklch(0.141 0.005 285.823 / 0.3);
+
+    --mr-frame: oklch(0.141 0.005 285.823 / 0.22);
+    --mr-scrim: oklch(0.141 0.005 285.823 / 0.4);
+
+    /* ---- Text and status ---- */
+    --mr-text: var(--mr-zinc-900);
+    --mr-muted: var(--mr-zinc-600);
+    --mr-subtle: var(--mr-zinc-500);
+    --mr-ok: oklch(0.508 0.118 165.612);        /* emerald-700 */
+    --mr-danger: oklch(0.577 0.245 27.325);     /* red-600 */
+
+    /* ---- Accent: the accent file's darker step, white text on it ---- */
+    --mr-a: var(--mr-accent-strong, oklch(0.546 0.245 262.881));
+    --mr-on-a: oklch(1 0 0);
+    --mr-a-soft: color-mix(in oklab, var(--mr-a) 10%, transparent);
+    --mr-a-ring: color-mix(in oklab, var(--mr-a) 28%, transparent);
+    --mr-ok-soft: color-mix(in oklab, var(--mr-ok) 10%, transparent);
+    --mr-ok-ring: color-mix(in oklab, var(--mr-ok) 28%, transparent);
+
+    /* ---- Elevation: Tailwind's defaults, which are made for a light ground ---- */
+    --mr-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --mr-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --mr-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --mr-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    --mr-highlight: inset 0 1px 0 0 oklch(1 0 0 / 0.6);
+}

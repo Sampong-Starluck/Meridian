@@ -49,12 +49,12 @@
         overflow: visible;
     }
 
-    /* The content frame: across both columns, on the rail's ground */
+    /* The content frame: across the rail and page columns (not the gutter), on the rail's ground */
     .OuterFrame > .ContentFrame:has(> .LocalContentContainer.Library > .Container > .LeftListSizableContainer) {
-        grid-column: 1 / -1;
-        border-top-color: transparent;
+        grid-column: 1 / 3;
+        border-color: transparent;
         border-left-width: 0;
-        border-top-left-radius: 0;
+        border-radius: 0;
         background: var(--mr-rail) !important;
     }
 
@@ -101,9 +101,8 @@
     .OuterFrame .LocalContentContainer.Library .LibraryWindowDivider + .MainPanel {
         box-sizing: border-box;
         min-width: 0;
-        border-top: 1px solid var(--mr-line);
-        border-left: 1px solid var(--mr-line);
-        border-top-left-radius: var(--mr-radius-xl);
+        border: var(--mr-edge-w) solid var(--mr-edge);
+        border-radius: var(--mr-radius-xl);
         background: var(--mr-bg);
         overflow: hidden;
     }

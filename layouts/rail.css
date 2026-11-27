@@ -22,8 +22,9 @@
 
 .OuterFrame {
     display: grid !important;
-    grid-template-columns: var(--mr-rail-w) minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr) auto;
+    /* The last column and row are the gutter: chrome around the page card */
+    grid-template-columns: var(--mr-rail-w) minmax(0, 1fr) var(--mr-gutter);
+    grid-template-rows: auto minmax(0, 1fr) auto var(--mr-gutter);
     /* Shows through behind the page panel's rounded corner */
     background: var(--mr-rail) !important;
 }
@@ -41,7 +42,7 @@
 
 .OuterFrame > .TopBar > .SuperNavBar {
     grid-column: 1;
-    grid-row: 2 / 4;
+    grid-row: 2 / -1;
     height: auto !important;
     min-height: 0;
     align-items: stretch !important;
@@ -51,26 +52,27 @@
     box-sizing: border-box;
 }
 
-/* The page panel. Only the top-left corner is rounded: Store and Community pages are
-   native web views laid over this box, and a web view's own corners stay square. */
+/* The page card: an edge and a rounded corner on every side, with the gutter to its
+   right and below. Store and Community pages are native web views laid over this
+   box, so they draw their own edge and corners (webkit.css). */
 .OuterFrame > .ContentFrame {
     grid-column: 2;
     grid-row: 2;
     min-width: 0;
     min-height: 0;
     box-sizing: border-box;
-    border-top: 1px solid var(--mr-line);
-    border-left: 1px solid var(--mr-line);
-    border-top-left-radius: var(--mr-radius-xl);
+    border: var(--mr-edge-w) solid var(--mr-edge);
+    border-radius: var(--mr-radius-xl);
     background: var(--mr-bg) !important;
+    overflow: hidden;
 }
 
+/* Holds update alerts under the page; the bar itself is docked in the rail (section 3) */
 .OuterFrame > .BottomBarContainer {
     grid-column: 2;
     grid-row: 3;
     min-width: 0;
-    border-left: 1px solid var(--mr-line);
-    background: var(--mr-bg);
+    background: var(--mr-rail);
 }
 
 /* ========== 2. Rail contents ==========

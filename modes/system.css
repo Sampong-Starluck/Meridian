@@ -1,0 +1,6 @@
+/* Meridian · Appearance "Follow system"
+   Light while Windows is set to light (Settings > Personalization > Colors >
+   "Choose your default app mode"), dark otherwise. Steam's browser reports that
+   setting as prefers-color-scheme and switches as soon as it changes. */
+
+@import url("light.css") (prefers-color-scheme: light);

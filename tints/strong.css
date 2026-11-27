@@ -1,0 +1,5 @@
+/* Meridian · Surface tint "Strong": twice the chroma of "Subtle" (see tints/subtle.css) */
+:root {
+    --mr-tint: 2;
+    --mr-tint-hue: var(--mr-hue, 285.8);
+}

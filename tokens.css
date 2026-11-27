@@ -22,12 +22,15 @@
     --mr-zinc-900: oklch(0.21 0.006 285.885);
     --mr-zinc-950: oklch(0.141 0.005 285.823);
 
-    /* ---- Surfaces, darkest to lightest ---- */
-    --mr-rail: var(--mr-zinc-950);          /* window chrome: title bar and sidebar */
-    --mr-bg: oklch(0.178 0.006 285.85);     /* the content panel, between 950 and 900 */
-    --mr-surface: var(--mr-zinc-900);       /* cards, menus, dialogs */
-    --mr-raised: var(--mr-zinc-800);        /* secondary buttons, blocks inside a card */
-    --mr-raised-hover: var(--mr-zinc-700);
+    /* ---- Surfaces, darkest to lightest ----
+       Zinc steps written out as OKLCH. The Surface tint option sets --mr-tint (1 or 2)
+       and --mr-tint-hue (the accent's hue); each surface then gains a little chroma in
+       that hue. With no tint they are exactly Tailwind's zinc. */
+    --mr-rail: oklch(0.141 calc(0.005 + 0.012 * var(--mr-tint, 0)) var(--mr-tint-hue, 285.823));          /* zinc-950: title bar and sidebar */
+    --mr-bg: oklch(0.178 calc(0.006 + 0.014 * var(--mr-tint, 0)) var(--mr-tint-hue, 285.85));             /* the content panel, between 950 and 900 */
+    --mr-surface: oklch(0.21 calc(0.006 + 0.016 * var(--mr-tint, 0)) var(--mr-tint-hue, 285.885));        /* zinc-900: cards, menus, dialogs */
+    --mr-raised: oklch(0.274 calc(0.006 + 0.018 * var(--mr-tint, 0)) var(--mr-tint-hue, 286.033));        /* zinc-800: secondary buttons, blocks inside a card */
+    --mr-raised-hover: oklch(0.37 calc(0.013 + 0.02 * var(--mr-tint, 0)) var(--mr-tint-hue, 285.805));    /* zinc-700 */
 
     /* Overlays that sit on any surface */
     --mr-hover: oklch(1 0 0 / 0.06);        /* hover:bg-white/5 */
@@ -37,6 +40,16 @@
     /* Hairlines are translucent white, so they hold up on every surface */
     --mr-line: oklch(1 0 0 / 0.08);         /* border-white/10 */
     --mr-line-strong: oklch(1 0 0 / 0.14);  /* border-white/15: controls */
+    --mr-line-hover: oklch(1 0 0 / 0.24);   /* border-white/25: a control under the pointer */
+    --mr-cover-ring: oklch(1 0 0 / 0.1);    /* the inner edge on game covers */
+    --mr-edge: oklch(1 0 0 / 0.2);          /* where a page meets the window chrome */
+    --mr-edge-w: 2px;                       /* thick enough to show the rounded corner */
+    --mr-gutter: 8px;                       /* chrome left around the page card, right and bottom */
+
+    --mr-frame: rgb(0 0 0);                 /* the one-pixel window edge */
+
+    /* Behind dialogs */
+    --mr-scrim: rgb(0 0 0 / 0.6);
 
     /* ---- Text and status ---- */
     --mr-text: var(--mr-zinc-100);
@@ -74,3 +87,6 @@
     --mr-mono: "Geist Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
     --mr-ease: 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Light mode lives in modes/light.css. The Appearance option loads it (Light), or
+   loads modes/system.css, which imports it only while Windows is set to light. */

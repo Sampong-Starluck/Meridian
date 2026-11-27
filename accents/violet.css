@@ -1,2 +1,2 @@
-/* Tailwind violet-400 */
-:root { --mr-accent: oklch(0.702 0.183 293.541); }
+/* Tailwind violet-400; violet-600 in light mode */
+:root { --mr-accent: oklch(0.702 0.183 293.541); --mr-accent-strong: oklch(0.541 0.281 293.009); --mr-hue: 293.541; }

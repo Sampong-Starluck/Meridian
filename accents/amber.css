@@ -1,2 +1,2 @@
-/* Tailwind amber-400 */
-:root { --mr-accent: oklch(0.828 0.189 84.429); }
+/* Tailwind amber-400; amber-700 in light mode (600 is too faint for text on white) */
+:root { --mr-accent: oklch(0.828 0.189 84.429); --mr-accent-strong: oklch(0.555 0.163 48.998); --mr-hue: 84.429; }

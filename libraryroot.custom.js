@@ -1,33 +1,78 @@
 /**
  * Meridian · runs in the main Steam window and its menus.
  *
- * Left rail layout: Steam opens the Store / Library / Community menus on hover,
- * right under the item. In a vertical rail that menu would cover the items
- * below it, so hover-open is switched off while the rail is active.
- * Clicking an item still opens its page. With "Top tabs" nothing changes.
+ * Navigation menus open on right-click, in both layouts. Steam opens the Store /
+ * Library / Community / profile menus as soon as the pointer enters the item, so they
+ * pop up while you only pass over them (and in the left rail they cover the items
+ * below). Steam's "pointer entered" is kept from those items, and a right-click hands
+ * Steam one, which opens the menu as hover would. Leaving the item closes it as
+ * before, and a left click still opens the page.
+ *
+ * How React sees hover: onMouseEnter / onMouseLeave come from mouseout (the element
+ * left, with relatedTarget = the element entered), or from mouseover only when the
+ * pointer comes from outside React (another window). So:
+ * - mouseover into an item is stopped;
+ * - a mouseout towards an item is stopped and sent again aimed at the item's parent,
+ *   so React still sees the leave of where the pointer was, but no enter of the item;
+ * - a right-click sends a mouseout from the parent aimed at the item: an enter.
+ * CSS :hover is unaffected.
  */
 (function () {
     "use strict";
 
-    const HOVER_EVENTS = ["mouseover", "mouseenter", "pointerover", "pointerenter"];
+    const ITEM = ".SuperNavBar .SuperNavMenu";
+    let resending = false;
 
-    function railActive() {
-        const frame = document.querySelector(".OuterFrame");
-        return !!frame && getComputedStyle(frame).display === "grid";
+    const itemOf = (node) => (node instanceof Element ? node.closest(ITEM) : null);
+
+    function sendOut(type, from, to, like) {
+        resending = true;
+        try {
+            const Ctor = type.startsWith("pointer") ? PointerEvent : MouseEvent;
+            from.dispatchEvent(new Ctor(type, {
+                bubbles: true,
+                cancelable: true,
+                composed: true,
+                view: window,
+                relatedTarget: to,
+                clientX: like.clientX,
+                clientY: like.clientY,
+                screenX: like.screenX,
+                screenY: like.screenY,
+            }));
+        } finally {
+            resending = false;
+        }
     }
 
-    function blockHover(event) {
-        const target = event.target;
-        if (!(target instanceof Element)) return;
-        if (!target.closest(".SuperNavBar .SuperNavMenu")) return;
-        if (!railActive()) return;
-        // Stop Steam's handler before it sees the event. CSS :hover is unaffected.
+    function blockEnter(event) {
+        if (resending) return;
+        if (itemOf(event.target)) event.stopPropagation();
+    }
+
+    function blockOutTowardsItem(event) {
+        if (resending) return;
+        const toItem = itemOf(event.relatedTarget);
+        if (!toItem || itemOf(event.target) === toItem) return;
         event.stopPropagation();
+        sendOut(event.type, event.target, toItem.parentElement, event);
     }
 
-    for (const type of HOVER_EVENTS) {
-        document.addEventListener(type, blockHover, true);
+    function openOnRightClick(event) {
+        const item = itemOf(event.target);
+        if (!item) return;
+        event.preventDefault();
+        event.stopPropagation();
+        sendOut("mouseout", item.parentElement, item, event);
     }
+
+    for (const type of ["mouseover", "mouseenter", "pointerover", "pointerenter"]) {
+        document.addEventListener(type, blockEnter, true);
+    }
+    for (const type of ["mouseout", "pointerout"]) {
+        document.addEventListener(type, blockOutTowardsItem, true);
+    }
+    document.addEventListener("contextmenu", openOnRightClick, true);
 })();
 
 /**

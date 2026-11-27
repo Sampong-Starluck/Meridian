@@ -1,2 +1,2 @@
-/* Tailwind emerald-400 */
-:root { --mr-accent: oklch(0.765 0.177 163.223); }
+/* Tailwind emerald-400; emerald-700 in light mode (600 is too faint for text on white) */
+:root { --mr-accent: oklch(0.765 0.177 163.223); --mr-accent-strong: oklch(0.508 0.118 165.612); --mr-hue: 163.223; }

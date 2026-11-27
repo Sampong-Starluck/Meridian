@@ -4,7 +4,7 @@
    them as the lighter panel. In the Library the game list joins that dark ground
    as a sidebar, and the page beside it gets the rounded corner.
    How a nav item looks is in libraryroot.custom.css, shared with the left rail;
-   this file only places the items. Steam's hover menus keep working here. */
+   this file only places the items. Their menus open on right-click (libraryroot.custom.js). */
 
 @import url("../tokens.css");
 
@@ -20,10 +20,11 @@
     background: var(--mr-rail) !important;
 }
 
-/* Same inset as the game list below it, so the two line up on the left */
+/* Same inset as the game list below it (the gutter plus the list's own 6px),
+   so the two line up on the left */
 .OuterFrame > .TopBar > .SuperNavBar {
     height: auto !important;
-    padding: 0 6px 8px !important;
+    padding: 0 calc(var(--mr-gutter) + 6px) 8px !important;
 }
 
 .SuperNavBar .SuperNav {
@@ -56,16 +57,22 @@
 
 /* ========== 2. Page panel ========== */
 
-/* Store, Community, Downloads: the page fills the width, set off by a hairline */
+/* Store, Community, Downloads: the page is a card with the gutter on three sides.
+   Store and Community are web views over this box and draw their own edge and
+   corners (webkit.css). */
 .OuterFrame > .ContentFrame {
     box-sizing: border-box;
-    border-top: 1px solid var(--mr-line);
+    margin: 0 var(--mr-gutter) var(--mr-gutter);
+    border: var(--mr-edge-w) solid var(--mr-edge);
+    border-radius: var(--mr-radius-xl);
+    overflow: hidden;
 }
 
 /* Library and game pages: the game list is a sidebar on the dark ground, with no line
    between it and the navigation row above... */
 .OuterFrame > .ContentFrame:has(> .LocalContentContainer > .Container > .LeftListSizableContainer) {
-    border-top-color: transparent;
+    border-color: transparent;
+    border-radius: 0;
     background: var(--mr-rail) !important;
 }
 
@@ -86,9 +93,8 @@
 
 .OuterFrame .LibraryWindowDivider + .MainPanel {
     box-sizing: border-box;
-    border-top: 1px solid var(--mr-line);
-    border-left: 1px solid var(--mr-line);
-    border-top-left-radius: var(--mr-radius-xl);
+    border: var(--mr-edge-w) solid var(--mr-edge);
+    border-radius: var(--mr-radius-xl);
     background: var(--mr-bg);
     overflow: hidden;
 }

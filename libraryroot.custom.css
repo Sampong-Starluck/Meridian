@@ -16,6 +16,12 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+/* Steam sets its grey (#acb2b8) on the window frame and lets most text inherit it.
+   The theme's muted grey instead, so inherited text reads in light mode too. */
+.OuterFrame {
+    color: var(--mr-muted);
+}
+
 ::selection {
     background: var(--mr-a);
     color: var(--mr-on-a);
@@ -43,7 +49,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: oklch(1 0 0 / 0.28);
+    background-color: var(--mr-line-hover);
 }
 
 /* Buttons. Secondary by default: a raised grey with a one-pixel top highlight. */
@@ -434,6 +440,15 @@ input[type="search"]:focus {
     border-radius: var(--mr-radius-full) !important;
 }
 
+.TitleBarControls .AccountMenu img.avatar {
+    border-color: var(--mr-line-strong) !important;
+}
+
+/* Steam's one-pixel black window frame; a softer edge in light mode */
+.ForceOpaqueBackground {
+    border-color: var(--mr-frame) !important;
+}
+
 /* Steam's blue-to-teal glow behind the window buttons (top-right corner) */
 .title-area-highlight {
     display: none !important;
@@ -478,10 +493,29 @@ input[type="search"]:focus {
     box-shadow: var(--mr-shadow-lg);
 }
 
-/* Address bar on Store and Community pages: reads like a browser's, URL in monospace */
+/* Store and Community pages are a web view that draws its own edge and rounded corner
+   (webkit.css). The frame around it stays on the navigation's ground, so the edge is
+   not drawn twice and, with the address bar on, the bar sits on that ground above the
+   page instead of the page's corner cutting a notch under it. The border stays as a
+   transparent gap so the web view keeps its place. Steam hides the web view on Library
+   pages with an inline display: none.
+   The page's scrollbar is its right gutter (webkit.css), so the frame also takes the
+   gutter on the right: the column in the left rail, the margin in top tabs. */
+.OuterFrame > .ContentFrame:has(> .BrowserWrapper:not([style*="none"])) {
+    grid-column: 2 / -1;
+    margin-right: 0 !important;
+    border-color: transparent !important;
+    border-right-width: 0 !important;
+    border-radius: 0 !important;
+    background: var(--mr-rail) !important;
+}
+
+/* Address bar on Store and Community pages: a toolbar on the navigation's ground,
+   URL in monospace */
 .URLBar {
-    background: var(--mr-bg) !important;
-    border-bottom: 1px solid var(--mr-line);
+    background: transparent !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important; /* Steam's inset bevel */
 }
 
 .URLBarText {
@@ -510,6 +544,8 @@ input[type="search"]:focus {
 .BottomBar {
     background: var(--mr-rail) !important;
     border-top: 1px solid var(--mr-line);
+    /* Steam's slate bevel: hidden on dark, a hard grey frame on light */
+    box-shadow: none !important;
 }
 
 .BottomBar .Text,
@@ -661,7 +697,7 @@ input[type="search"]:focus {
 }
 
 .DialogDropDown:hover {
-    border-color: oklch(1 0 0 / 0.24) !important;
+    border-color: var(--mr-line-hover) !important;
     background: var(--mr-hover) !important;
 }
 
@@ -716,7 +752,7 @@ input[type="search"]:focus {
 
 /* Scrim: dimmed and softly blurred, so the dialog is clearly the thing in front */
 .ModalOverlayBackground {
-    background: rgb(0 0 0 / 0.6) !important;
+    background: var(--mr-scrim) !important;
     backdrop-filter: blur(4px);
 }
 
@@ -745,6 +781,160 @@ input[type="search"]:focus {
 
 .DialogFooter {
     border-top: 1px solid var(--mr-line) !important;
+}
+
+/* Pop-up windows (Settings, Properties and other dialogs) have no edge of their own, so on
+   a light desktop they run into whatever is behind them. A one-pixel frame on top. */
+body.ModalDialogBody::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    border: 1px solid var(--mr-edge);
+    pointer-events: none;
+}
+
+/* Dialog windows draw Steam's blue-to-teal focus gradient along their top edge */
+.ModalPosition_TopBar {
+    display: none !important;
+}
+
+/* ---- Steam Settings window (PagedSettingsDialog) ----
+   Page list on the chrome color like the main window's sidebar, the page on the panel
+   color, settings rows as cards. Steam's own slate and blue otherwise stay in both modes. */
+.PagedSettingsDialog .PageListColumn {
+    border-right: 1px solid var(--mr-edge);
+    background: var(--mr-rail) !important;
+    color: var(--mr-muted) !important;
+}
+
+.PagedSettingsDialog_Title {
+    color: var(--mr-text) !important;
+    font-family: var(--mr-font) !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+    letter-spacing: -0.01em !important;
+}
+
+.PagedSettingsDialog_PageListItem {
+    border-radius: var(--mr-radius-lg) !important;
+    color: var(--mr-muted) !important;
+    transition: background-color var(--mr-ease), color var(--mr-ease);
+}
+
+.PagedSettingsDialog_PageListItem:hover {
+    background: var(--mr-hover) !important;
+    color: var(--mr-text) !important;
+}
+
+.PagedSettingsDialog_PageListItem.Active {
+    background: var(--mr-active) !important;
+    color: var(--mr-text) !important;
+}
+
+.PagedSettingsDialog_PageListItem .PageListItem_Title {
+    color: inherit !important;
+}
+
+.PagedSettingsDialog_PageListItem svg,
+.PagedSettingsDialog_PageListItem svg path {
+    fill: currentColor;
+}
+
+.PagedSettingsDialog_PageListItem.Active svg {
+    color: var(--mr-a);
+}
+
+/* The page: flat panel color, not a floating card and not Steam's slate glow */
+.PagedSettingDialog_ContentColumn {
+    background: var(--mr-bg) !important;
+}
+
+.DialogContent.PagedSettingsDialog_PageContent {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: var(--mr-bg) !important;
+    box-shadow: none !important;
+}
+
+/* Settings rows Steam fills with slate ("Friend Code", "Email Address") */
+.PagedSettingsDialog .Field.Background {
+    border: 1px solid var(--mr-line);
+    border-radius: var(--mr-radius-lg);
+    background: var(--mr-surface) !important;
+}
+
+.PagedSettingsDialog .FieldLabel {
+    color: var(--mr-text) !important;
+}
+
+.PagedSettingsDialog .FieldDescription,
+.PagedSettingsDialog .FieldLabelValue {
+    color: var(--mr-muted) !important;
+}
+
+.PageListSeparator {
+    background: var(--mr-line) !important;
+}
+
+/* Toggles: Steam's blue fill becomes the accent, and the off track a visible grey
+   instead of white at 15% (which disappears on a light page) */
+.ToggleRail {
+    background: var(--mr-raised-hover) !important;
+}
+
+.ToggleRail::before {
+    background: var(--mr-a) !important;
+}
+
+.ToggleSwitch {
+    background: oklch(1 0 0) !important;
+    box-shadow: var(--mr-shadow-xs), 0 0 0 1px oklch(0 0 0 / 0.06) !important;
+}
+
+.SettingsDialogSubHeader {
+    color: var(--mr-text) !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+.SettingsLink {
+    color: var(--mr-a) !important;
+}
+
+.DialogDropDown .DialogDropDown_Arrow,
+.DialogDropDown .DialogDropDown_Arrow svg {
+    color: var(--mr-muted) !important;
+    fill: currentColor;
+}
+
+/* The chosen value inside a dropdown button: Steam writes a near-white */
+.DialogDropDown .DialogDropDown_CurrentDisplay,
+.DialogDropDown .DialogDropDown_CurrentDisplay * {
+    color: var(--mr-text) !important;
+}
+
+.SettingsDialogFatButton svg,
+.SettingsDialogFatButton svg path {
+    color: var(--mr-muted) !important;
+    fill: currentColor;
+}
+
+/* Settings > Account: "Add Funds", "Manage Steam Guard" and other big buttons.
+   Steam writes white and pale grey into them. */
+.SettingsDialogFatButton .Label,
+.SettingsDialogFatButton .Highlight {
+    color: var(--mr-text) !important;
+}
+
+.SettingsDialogFatButton .Details {
+    color: var(--mr-muted) !important;
+}
+
+/* Your name in Settings and other account rows: Steam's pale online blue */
+.LabelHolder.online .playerName {
+    color: var(--mr-a) !important;
 }
 
 /* ========== 7. Toasts, notifications and find bar ==========
@@ -937,7 +1127,18 @@ input[type="search"]:focus {
 /* "Games and Software" view picker */
 .LeftListSizableContainer .SearchBar .MenuHeader {
     border-radius: var(--mr-radius-md);
+    background: var(--mr-input) !important;
+    box-shadow: inset 0 0 0 1px var(--mr-line-strong);
     color: var(--mr-text) !important;
+}
+
+.LeftListSizableContainer .CollapseIconParent svg {
+    stroke: var(--mr-subtle) !important;
+}
+
+/* "(7)" beside a shelf's name */
+.CountDisplay {
+    color: var(--mr-subtle) !important;
 }
 
 .LeftListSizableContainer .SearchBar .MenuHeader:hover {
@@ -996,6 +1197,42 @@ input[type="search"]:focus {
 
 .LeftListSizableContainer .GameListEntryContainer:hover {
     background: var(--mr-hover) !important;
+}
+
+/* The row's wrapper gets Steam's slate on hover; the row above carries the hover instead */
+.LeftListSizableContainer .Container:has(> .GameListEntryContainer):hover {
+    background: transparent !important;
+}
+
+/* Game names by state. Steam writes near-white and pale blues meant for a dark ground,
+   which vanish in light mode, so each state takes a theme color instead. */
+.LeftListSizableContainer .GameListEntryContainer,
+.LeftListSizableContainer .GameListEntryContainer span {
+    color: var(--mr-muted) !important;
+}
+
+.LeftListSizableContainer :is(.Installed, .InstalledRemotely) > .GameListEntryContainer,
+.LeftListSizableContainer :is(.Installed, .InstalledRemotely) > .GameListEntryContainer span,
+.LeftListSizableContainer .Container:hover > .GameListEntryContainer,
+.LeftListSizableContainer .Container:hover > .GameListEntryContainer span {
+    color: var(--mr-text) !important;
+}
+
+/* Updating, syncing or a cloud problem: Steam's blue, in the accent */
+.LeftListSizableContainer :is(.Updating, .Synchronizing, .CloudError, .CloudOutOfDate) > .GameListEntryContainer,
+.LeftListSizableContainer :is(.Updating, .Synchronizing, .CloudError, .CloudOutOfDate) > .GameListEntryContainer span,
+.LeftListSizableContainer .GameListEntryContainer .DownloadProgress {
+    color: var(--mr-a) !important;
+}
+
+.LeftListSizableContainer .Running > .GameListEntryContainer,
+.LeftListSizableContainer .Running > .GameListEntryContainer span,
+.LeftListSizableContainer .Running .DownloadProgress {
+    color: var(--mr-ok) !important;
+}
+
+.LeftListSizableContainer .GameListEntryContainer svg:not(.SVGIcon_FriendIcon) {
+    color: var(--mr-muted) !important;
 }
 
 /* Steam paints the selected row's wrapper blue; the row itself carries the highlight */
@@ -1162,7 +1399,8 @@ input[type="search"]:focus {
     border-radius: var(--mr-radius-md) !important;
     background: rgb(9 9 11 / 0.6) !important;
     backdrop-filter: blur(8px);
-    color: var(--mr-text) !important;
+    /* Over the artwork, so light text in both modes */
+    color: var(--mr-zinc-50) !important;
     font-size: 11px !important;
     font-weight: 500;
 }
@@ -1184,6 +1422,71 @@ input[type="search"]:focus {
 
 .PlayBar .GameStatIcon {
     color: var(--mr-muted);
+}
+
+/* Text that inherits Steam's grey (#acb2b8) or white: the theme's colors instead,
+   so it reads in light mode too. Anything with its own color rule keeps it. */
+.AppDetailsMain {
+    color: var(--mr-muted);
+}
+
+.AppDetailsOverviewPanel .AppDetailsSection {
+    color: var(--mr-text);
+}
+
+/* Game name in the play bar once it sticks to the top */
+.PlayBar .PlayBarGameName {
+    color: var(--mr-text) !important;
+}
+
+/* Gear, ..., favorite: Steam fills their icons with white at 50% */
+.PlayBar .AppButtonsContainer .MenuButton svg,
+.PlayBar .AppButtonsContainer .MenuButton svg path {
+    fill: currentColor !important;
+    color: inherit !important;
+}
+
+/* The "..." button turns into a chevron in the sticky bar; it is drawn with a white stroke */
+.PlayBar .AppButtonsContainer .DotDotDot {
+    color: inherit !important;
+}
+
+.PlayBar .AppButtonsContainer .MenuButton svg :is(polyline, line) {
+    stroke: currentColor !important;
+}
+
+/* "Would you recommend this game?": a card with accent buttons, not a slate band */
+.ReviewContainer .RatingContainer {
+    border: 1px solid var(--mr-line);
+    border-radius: var(--mr-radius-xl);
+    background: var(--mr-surface) !important;
+    box-shadow: var(--mr-highlight), var(--mr-shadow-xs);
+    color: var(--mr-text) !important;
+}
+
+.ReviewContainer .RatingContainer .LeftContainer > :not(.Playtime) {
+    color: var(--mr-text) !important;
+}
+
+.ReviewContainer .RatingContainer .Playtime {
+    color: var(--mr-muted) !important;
+}
+
+.ReviewContainer .ReviewThumbButton {
+    border-radius: var(--mr-radius-lg) !important;
+    background: var(--mr-a-soft) !important;
+    box-shadow: inset 0 0 0 1px var(--mr-a-ring);
+    color: var(--mr-a) !important;
+    transition: background-color var(--mr-ease);
+}
+
+.ReviewContainer .ReviewThumbButton:hover {
+    background: color-mix(in oklab, var(--mr-a) 22%, transparent) !important;
+}
+
+.ReviewContainer .ReviewThumbButton svg,
+.ReviewContainer .ReviewThumbButton svg path {
+    fill: currentColor !important;
 }
 
 /* Store page / Community hub / Discussions / Guides / Support: an underlined tab strip */
@@ -1213,6 +1516,8 @@ input[type="search"]:focus {
 }
 
 .LinksSection .Link .Text {
+    /* Steam dims the label with white at 32%, which disappears on a light ground */
+    color: inherit !important;
     text-transform: none !important;
     letter-spacing: 0 !important;
 }
@@ -1327,7 +1632,47 @@ input[type="search"]:focus {
 
 .AppDetailsOverviewPanel .PartnerEventMediumImage {
     border: 1px solid var(--mr-line);
+    box-shadow: none !important;
     overflow: hidden;
+}
+
+.AppDetailsOverviewPanel .PartnerEventMediumImage_Contents,
+.AppDetailsOverviewPanel .PartnerEventMediumImage_Contents :where(div) {
+    color: var(--mr-muted) !important;
+}
+
+.AppDetailsOverviewPanel .PartnerEventMediumImage_Title {
+    color: var(--mr-text) !important;
+    font-weight: 600;
+}
+
+.AppDetailsOverviewPanel .PartnerEventType,
+.AppDetailsOverviewPanel .PartnerEventType .DayPosted {
+    color: var(--mr-subtle) !important;
+}
+
+/* "Featured" band: Steam's blue gradient becomes a tinted accent strip */
+.AppDetailsOverviewPanel .PartnerEventFeaturedHeader {
+    background: var(--mr-a-soft) !important;
+    border-bottom: 1px solid var(--mr-a-ring);
+    color: var(--mr-a) !important;
+    font-weight: 600;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+/* Activity feed: friend names in Steam's pale online blue, game names in light grey */
+.AppDetailsOverviewPanel .SpanEvent .playerName {
+    color: var(--mr-a) !important;
+}
+
+.AppDetailsOverviewPanel .SpanEvent .HeadlineGameName {
+    color: var(--mr-text) !important;
+}
+
+/* Release date and other stats beside the feed */
+.AppDetailsOverviewPanel .Stats .Date {
+    color: var(--mr-text) !important;
 }
 
 /* A news post opened over the game page */
@@ -1377,7 +1722,7 @@ input[type="search"]:focus {
 }
 
 .LibraryHome .LibraryItemBox {
-    outline: 1px solid oklch(1 0 0 / 0.1);
+    outline: 1px solid var(--mr-cover-ring);
     outline-offset: -1px;
     transition: box-shadow var(--mr-ease);
 }
@@ -1399,6 +1744,12 @@ input[type="search"]:focus {
 
 .AppPortraitHover .CapsuleBackgroundContainer {
     display: none !important;
+}
+
+/* The screenshot fades out at the bottom; Steam puts 10% black behind it, which shows
+   as a grey band on a light card. Fade straight into the card instead. */
+.AppPortraitHover .ScreenshotCrossfade {
+    background: transparent !important;
 }
 
 .AppPortraitHover .AppTitle {
@@ -1531,7 +1882,7 @@ input[type="search"]:focus {
 
 /* "Add shelf": a dashed outline, the usual shape for "add something here" */
 .LibraryHome .AddShowcase {
-    border: 1px dashed oklch(1 0 0 / 0.2);
+    border: 1px dashed var(--mr-line-hover);
     border-radius: var(--mr-radius-lg) !important;
     background: transparent !important;
     color: var(--mr-muted) !important;
@@ -1582,7 +1933,7 @@ input[type="search"]:focus {
 }
 
 .SortingDropDown .DialogDropDown:hover {
-    border-color: oklch(1 0 0 / 0.24) !important;
+    border-color: var(--mr-line-hover) !important;
     background: var(--mr-hover) !important;
 }
 
@@ -1728,6 +2079,15 @@ input[type="search"]:focus {
     font-size: 15px !important;
     font-weight: 600 !important;
     letter-spacing: -0.01em !important;
+}
+
+/* Steam colors the "Up Next" / "Completed" label itself white */
+.DownloadsPage .SectionTitle .Title {
+    color: inherit !important;
+}
+
+.DownloadsPage .LegendText {
+    color: var(--mr-muted) !important;
 }
 
 .DownloadsPage .SectionTitle .Rule {
