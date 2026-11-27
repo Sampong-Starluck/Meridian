@@ -2,6 +2,16 @@
 
 What changed in each version of Meridian, newest first. The version number is the one in `skin.json`.
 
+## 1.3.2 - 2026-11-27
+
+### Fixed
+
+- **Downloads card** at the bottom of the left rail can be clicked anywhere on it. Steam listens for clicks on the content inside the card, and the theme had put the card's padding outside that content, so clicks near the edges did nothing even though the whole card lit up on hover. The padding is now on the clickable part. The card looks the same.
+
+### Changed
+
+- **Big Picture**: the Steam menu and Quick Access menu now match the theme. They are separate windows that Millennium does not style, so `bigpicture.custom.js` copies the theme's stylesheets into them. `bigpicture.custom.css` also restyles the Home and Library tiles, the game page (Play / Install button in the accent color, flat page ground) and Settings (selected page marked like the desktop sidebar, one setting per rounded row), and replaces Steam's ALL CAPS labels with sentence case.
+
 ## 1.3.1 - 2026-11-15
 
 ### Fixed
